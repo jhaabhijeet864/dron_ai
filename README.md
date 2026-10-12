@@ -14,6 +14,7 @@ An AI/ML-based decision-support system that analyzes a student's multidimensiona
 
 ## Tech Stack
 
+
 | Layer | Technology |
 |---|---|
 | Frontend | Vanilla HTML5, CSS3, JavaScript (ES6+) |
@@ -61,10 +62,10 @@ cp .env.example .env
 # (Optional) Edit .env with your secret keys and GitHub token
 
 # 5. Initialize database
-python scripts/seed_db.py
+python app/scripts/seed_db.py
 
 # 6. Train ML models & generate checksums (first time only)
-python scripts/train_model.py
+python ml_engine/scripts/train_model.py
 ```
 
 ### Running the Application
@@ -83,6 +84,11 @@ python run.py
 cd frontend
 python -m http.server 8000
 # The frontend UI will be available at http://localhost:8000
+```
+
+**Or start both at once:**
+```bash
+python scripts/start_servers.py
 ```
 
 ## Team

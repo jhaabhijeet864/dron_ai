@@ -11,17 +11,17 @@ Usage:
 import os
 import sys
 
-# Add project root to path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Add project root to path (train_model.py -> scripts -> ml_engine -> project root)
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
 
 from ml_engine.xgboost_model import PlacementPredictor
-from ml_engine.marks_predictor import MarksPredictor
 
 
 def train():
     """Train the XGBoost model and save to disk."""
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    
+    base_dir = PROJECT_ROOT
     # Primary dataset path with fallback
     dataset_candidates = [
         os.path.join(base_dir, "ml_engine", "data", "student_career_success_dataset.csv"),
@@ -42,7 +42,6 @@ def train():
 
     save_path = os.path.join(base_dir, "ml_engine", "saved_models", "xgboost_placement.pkl")
     scaler_save_path = os.path.join(base_dir, "ml_engine", "saved_models", "scaler.pkl")
-    marks_model_save_path = os.path.join(base_dir, "ml_engine", "saved_models", "marks_predictor.pkl")
 
     print("==================================================")
     print(">> Starting XGBoost Placement Predictor Training")
@@ -75,21 +74,6 @@ def train():
     print("Top 5 Most Influential Features:")
     for i, (feature, importance) in enumerate(list(metrics['feature_importance'].items())[:5], start=1):
         print(f"  {i}. {feature:<20}: {importance * 100:.2f}%")
-    print("==================================================")
-
-    # Train Marks Predictor
-    print("\n==================================================")
-    print(">> Starting Marks Predictor Training")
-    print(f"-> Model Output: {marks_model_save_path}")
-    print("==================================================")
-
-    marks_predictor = MarksPredictor(n_estimators=100, max_depth=10, random_state=42)
-    marks_metrics = marks_predictor.train(data_path=data_path, save_path=marks_model_save_path)
-
-    print("\n[OK] Marks Predictor Training Complete!")
-    print("--------------------------------------------------")
-    print(f"MSE Score : {marks_metrics['mse']:.4f}")
-    print(f"R2 Score  : {marks_metrics['r2_score']:.4f}")
     print("==================================================")
 
 
