@@ -40,19 +40,33 @@
 .sidebar-logo {
     width: 38px;
     height: 38px;
+    max-width: 38px;
+    max-height: 38px;
     background: var(--gradient-gold);
     border-radius: var(--radius-md);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: var(--shadow-glow);
+    border: 1px solid rgba(212, 175, 55, 0.35);
     flex-shrink: 0;
+    overflow: hidden;
 }
 
 .sidebar-logo svg {
-    width: 20px;
-    height: 20px;
+    width: 20px !important;
+    height: 20px !important;
+    max-width: 20px !important;
+    max-height: 20px !important;
     stroke: #0A0A0C;
+    flex-shrink: 0;
+}
+
+/* Fallback constraint in case of cached legacy markup */
+.nav-logo-icon, .nav-logo-icon svg {
+    width: 36px !important;
+    height: 36px !important;
+    max-width: 36px !important;
+    max-height: 36px !important;
 }
 
 .sidebar-brand-text {
@@ -299,7 +313,8 @@
 }
 
 /* ── Welcome / Page Banner ── */
-.page-banner {
+.page-banner,
+.dashboard-header-banner {
     padding: var(--space-xl) var(--space-2xl);
     border-radius: var(--radius-lg);
     background: var(--gradient-gold-subtle);
@@ -311,12 +326,14 @@
     gap: var(--space-xl);
 }
 
-.page-banner h1 {
+.page-banner h1,
+.dashboard-header-banner h1 {
     font-size: var(--font-size-2xl);
     margin-bottom: var(--space-xs);
 }
 
-.page-banner p {
+.page-banner p,
+.dashboard-header-banner p {
     color: var(--color-text-muted);
     font-size: var(--font-size-sm);
     max-width: 540px;
@@ -418,8 +435,8 @@
 
 .hub-card:hover {
     border-color: var(--color-border-hover);
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg), var(--shadow-glow);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 .hub-card:hover::before { opacity: 1; }
@@ -494,18 +511,18 @@
 
 .gauge-bg {
     fill: none;
-    stroke: var(--color-border);
+    stroke: rgba(212, 175, 55, 0.12);
     stroke-width: 8;
 }
 
 .gauge-fill-arc {
     fill: none;
-    stroke: url(#gauge-gradient);
+    stroke: var(--color-primary);
     stroke-width: 8;
     stroke-linecap: round;
     stroke-dasharray: 440;
     stroke-dashoffset: 440;
-    transition: stroke-dashoffset 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: stroke-dashoffset 0.8s ease;
 }
 
 .gauge-center-content {
@@ -599,13 +616,13 @@
 .career-match-card:hover {
     border-color: var(--color-border-hover);
     background: rgba(212, 175, 55, 0.06);
-    box-shadow: var(--shadow-glow);
+    box-shadow: none;
 }
 
 .career-match-card.active-target {
     border-color: var(--color-primary);
     background: rgba(212, 175, 55, 0.08);
-    box-shadow: 0 0 20px rgba(212, 175, 55, 0.15);
+    box-shadow: none;
 }
 
 .career-info { display: flex; flex-direction: column; gap: 4px; }

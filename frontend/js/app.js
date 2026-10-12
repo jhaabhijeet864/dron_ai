@@ -66,22 +66,16 @@ function populateDashboardFields(data) {
     const links = data.platform_links || data.links || {};
     const skills = data.skills || {};
 
-    // 1. Navbar
-    const navName = document.getElementById("nav-username");
-    const navAvatar = document.getElementById("nav-avatar");
-    const navRole = document.getElementById("nav-user-role");
+    // 1. Navbar & Sidebar User Info
+    const navName = document.getElementById("nav-username") || document.getElementById("sidebar-username");
+    const navAvatar = document.getElementById("nav-avatar") || document.getElementById("sidebar-avatar");
+    const navRole = document.getElementById("nav-user-role") || document.getElementById("sidebar-user-role");
 
     if (navName && user.full_name) {
         navName.textContent = user.full_name;
     }
     if (navAvatar && user.full_name) {
-        const initials = user.full_name
-            .trim()
-            .split(/\s+/)
-            .map((n) => n[0])
-            .join("")
-            .substring(0, 2)
-            .toUpperCase();
+        const initials = user.full_name.trim().split(/\s+/).map((n) => n[0]).join("").substring(0, 2).toUpperCase();
         navAvatar.textContent = initials || "ST";
     }
     if (navRole) {
