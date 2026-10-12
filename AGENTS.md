@@ -2,6 +2,10 @@
 
 > **Quick Context for AI Agents**: Dron-AI is an AI/ML-driven student career guidance and placement readiness platform. It integrates academic records, GitHub activity, and LeetCode metrics into a quantitative feature vector to predict placement readiness, recommend career paths, calculate skill gaps, and generate learning roadmaps.
 
+> ?? **Comprehensive Agent Reference Guides**:
+> - For full architecture, ML formulas, database schemas, and developer workflows: see [AGENT_ARCHITECTURE_GUIDE.md](AGENT_ARCHITECTURE_GUIDE.md)
+> - For an exhaustive breakdown of every mathematical parameter, DB column, API payload, and UI screen/feature: see [PARAMETERS_AND_UI_FEATURES.md](PARAMETERS_AND_UI_FEATURES.md)
+
 ---
 
 ## ⚠️ Team Ownership & Role Boundaries
