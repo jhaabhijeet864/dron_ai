@@ -1,134 +1,135 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Dron-AI Placement Prediction — XGBoost-powered readiness analysis">
-    <title>Dron-AI — Placement Prediction</title>
-    <link rel="stylesheet" href="../css/variables.css">
-    <link rel="stylesheet" href="../css/main.css">
-    <link rel="stylesheet" href="../css/dashboard.css">
-</head>
-<body>
-
-    <!-- Page Banner -->
-    <section class="page-banner">
-        <div>
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-                <span class="badge badge-primary">Supervised Machine Learning</span>
-                <span class="badge badge-success"><span class="badge-dot"></span> Latency &lt; 2ms Target</span>
-            </div>
-            <h1>Placement Readiness Prediction</h1>
-            <p>High-precision XGBoost classifier trained on multi-dimensional academic, algorithmic, and engineering vectors.</p>
-        </div>
-        <button class="btn btn-primary" id="predict-btn" type="button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-            <span>Run Placement Analysis</span>
-        </button>
-    </section>
-
-    <!-- Main Prediction Layout -->
-    <div class="dashboard-grid">
-
-        <!-- Left Column: Gauge & Prediction Result -->
-        <div class="col-6">
-            <section class="card">
-                <div class="card-header">
-                    <div class="card-title-group">
-                        <div class="card-icon" style="background: rgba(16, 185, 129, 0.12); color: var(--color-success);">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                        </div>
-                        <h2>Placement Readiness Score</h2>
-                    </div>
-                    <span class="badge badge-success" id="readiness-tier-badge"><span class="badge-dot"></span> <span id="readiness-tier-text">Ready</span></span>
-                </div>
-
-                <div class="card-body">
-                    <div class="gauge-card-body" style="padding: var(--space-xl) 0;">
-                        <!-- Circular Gauge Visualization -->
-                        <div class="gauge-wrapper">
-                            <svg class="gauge-svg" viewBox="0 0 160 160">
-                                <defs>
-                                    <linearGradient id="gauge-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                                        <stop offset="0%" stop-color="var(--color-primary)" />
-                                        <stop offset="100%" stop-color="var(--color-accent)" />
-                                    </linearGradient>
-                                </defs>
-                                <circle class="gauge-bg" cx="80" cy="80" r="70" />
-                                <circle class="gauge-fill-arc" id="gauge-fill-arc" cx="80" cy="80" r="70" />
-                            </svg>
-                            <div class="gauge-center-content">
-                                <span class="gauge-percent" id="gauge-percent">--%</span>
-                                <span class="gauge-caption">Readiness Index</span>
-                            </div>
-                        </div>
-
-                        <div style="text-align: center; margin-top: var(--space-lg); max-width: 360px;">
-                            <p id="readiness-tier-desc" style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">
-                                Click <strong>Run Placement Analysis</strong> to synthesize your academic GPA, LeetCode metrics, and GitHub contributions through the XGBoost inference model.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <!-- Right Column: SHAP Feature Importance & Factor Breakdown -->
-        <div class="col-6">
-            <section class="card">
-                <div class="card-header">
-                    <div class="card-title-group">
-                        <div class="card-icon" style="background: rgba(212, 175, 55, 0.12); color: var(--color-primary);">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                        </div>
-                        <h2>Key Contributing Factors</h2>
-                    </div>
-                    <span class="badge badge-info">Relative Importance</span>
-                </div>
-
-                <div class="card-body">
-                    <div class="section-subtitle">Top Model Influence Dimensions</div>
-                    <div class="feature-influence-list" id="feature-influence-list">
-                        <div class="influence-item">
-                            <span class="name">Data Structures &amp; Algorithms Score</span>
-                            <span class="impact-pos">+26% Impact</span>
-                        </div>
-                        <div class="influence-item">
-                            <span class="name">Cumulative GPA (Academic Standing)</span>
-                            <span class="impact-pos">+21% Impact</span>
-                        </div>
-                        <div class="influence-item">
-                            <span class="name">LeetCode Consistency &amp; Contest Rating</span>
-                            <span class="impact-pos">+18% Impact</span>
-                        </div>
-                        <div class="influence-item">
-                            <span class="name">Active Projects &amp; GitHub Activity</span>
-                            <span class="impact-pos">+14% Impact</span>
-                        </div>
-                        <div class="influence-item">
-                            <span class="name">Soft Skills &amp; Communication Score</span>
-                            <span class="impact-neg" id="comm-influence">-7% Gap</span>
-                        </div>
-                    </div>
-
-                    <div style="margin-top: var(--space-xl); padding: var(--space-md); background: rgba(212, 175, 55, 0.05); border: 1px dashed rgba(212, 175, 55, 0.25); border-radius: var(--radius-md);">
-                        <div style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-primary-light); margin-bottom: 4px;">
-                            Model Architecture Note
-                        </div>
-                        <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary); line-height: 1.5;">
-                            Inference enforces single-row scalar transforms using pre-fitted <code>StandardScaler</code> parameters with SHA-256 verified checkpoints to guarantee reproducible predictions under 2ms.
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-    </div>
-
-    <!-- Scripts -->
-    <script src="../js/api.js"></script>
-    <script src="../js/auth.js"></script>
-    <script src="../js/nav.js"></script>
-    <script src="../js/placement.js"></script>
-</body>
-</html>
+—<—!—D—O—C—T—Y—P—E— —h—t—m—l—>—
+—<—h—t—m—l— —l—a—n—g—=—"—e—n—"—>—
+—<—h—e—a—d—>—
+— — — — —<—m—e—t—a— —c—h—a—r—s—e—t—=—"—U—T—F—-—8—"—>—
+— — — — —<—m—e—t—a— —n—a—m—e—=—"—v—i—e—w—p—o—r—t—"— —c—o—n—t—e—n—t—=—"—w—i—d—t—h—=—d—e—v—i—c—e—-—w—i—d—t—h—,— —i—n—i—t—i—a—l—-—s—c—a—l—e—=—1—.—0—"—>—
+— — — — —<—m—e—t—a— —n—a—m—e—=—"—d—e—s—c—r—i—p—t—i—o—n—"— —c—o—n—t—e—n—t—=—"—D—r—o—n—-—A—I— —P—l—a—c—e—m—e—n—t— —P—r—e—d—i—c—t—i—o—n— ——— —X—G—B—o—o—s—t—-—p—o—w—e—r—e—d— —r—e—a—d—i—n—e—s—s— —a—n—a—l—y—s—i—s—"—>—
+— — — — —<—t—i—t—l—e—>—D—r—o—n—-—A—I— ——— —P—l—a—c—e—m—e—n—t— —P—r—e—d—i—c—t—i—o—n—<—/—t—i—t—l—e—>—
+— — — — —<—l—i—n—k— —r—e—l—=—"—s—t—y—l—e—s—h—e—e—t—"— —h—r—e—f—=—"—c—s—s—/—v—a—r—i—a—b—l—e—s—.—c—s—s—"—>—
+— — — — —<—l—i—n—k— —r—e—l—=—"—s—t—y—l—e—s—h—e—e—t—"— —h—r—e—f—=—"—c—s—s—/—m—a—i—n—.—c—s—s—"—>—
+— — — — —<—l—i—n—k— —r—e—l—=—"—s—t—y—l—e—s—h—e—e—t—"— —h—r—e—f—=—"—c—s—s—/—d—a—s—h—b—o—a—r—d—.—c—s—s—"—>—
+—<—/—h—e—a—d—>—
+—<—b—o—d—y—>—
+—
+— — — — —<—!—-—-— —P—a—g—e— —B—a—n—n—e—r— —-—-—>—
+— — — — —<—s—e—c—t—i—o—n— —c—l—a—s—s—=—"—p—a—g—e—-—b—a—n—n—e—r—"—>—
+— — — — — — — — —<—d—i—v—>—
+— — — — — — — — — — — — —<—d—i—v— —s—t—y—l—e—=—"—d—i—s—p—l—a—y—:— —f—l—e—x—;— —a—l—i—g—n—-—i—t—e—m—s—:— —c—e—n—t—e—r—;— —g—a—p—:— —8—p—x—;— —m—a—r—g—i—n—-—b—o—t—t—o—m—:— —6—p—x—;—"—>—
+— — — — — — — — — — — — — — — — —<—s—p—a—n— —c—l—a—s—s—=—"—b—a—d—g—e— —b—a—d—g—e—-—p—r—i—m—a—r—y—"—>—S—u—p—e—r—v—i—s—e—d— —M—a—c—h—i—n—e— —L—e—a—r—n—i—n—g—<—/—s—p—a—n—>—
+— — — — — — — — — — — — — — — — —<—s—p—a—n— —c—l—a—s—s—=—"—b—a—d—g—e— —b—a—d—g—e—-—s—u—c—c—e—s—s—"—>—<—s—p—a—n— —c—l—a—s—s—=—"—b—a—d—g—e—-—d—o—t—"—>—<—/—s—p—a—n—>— —L—a—t—e—n—c—y— —&—l—t—;— —2—m—s— —T—a—r—g—e—t—<—/—s—p—a—n—>—
+— — — — — — — — — — — — —<—/—d—i—v—>—
+— — — — — — — — — — — — —<—h—1—>—P—l—a—c—e—m—e—n—t— —R—e—a—d—i—n—e—s—s— —P—r—e—d—i—c—t—i—o—n—<—/—h—1—>—
+— — — — — — — — — — — — —<—p—>—H—i—g—h—-—p—r—e—c—i—s—i—o—n— —X—G—B—o—o—s—t— —c—l—a—s—s—i—f—i—e—r— —t—r—a—i—n—e—d— —o—n— —m—u—l—t—i—-—d—i—m—e—n—s—i—o—n—a—l— —a—c—a—d—e—m—i—c—,— —a—l—g—o—r—i—t—h—m—i—c—,— —a—n—d— —e—n—g—i—n—e—e—r—i—n—g— —v—e—c—t—o—r—s—.—<—/—p—>—
+— — — — — — — — —<—/—d—i—v—>—
+— — — — — — — — —<—b—u—t—t—o—n— —c—l—a—s—s—=—"—b—t—n— —b—t—n—-—p—r—i—m—a—r—y—"— —i—d—=—"—p—r—e—d—i—c—t—-—b—t—n—"— —t—y—p—e—=—"—b—u—t—t—o—n—"—>—
+— — — — — — — — — — — — —<—s—v—g— —v—i—e—w—B—o—x—=—"—0— —0— —2—4— —2—4—"— —f—i—l—l—=—"—n—o—n—e—"— —s—t—r—o—k—e—=—"—c—u—r—r—e—n—t—C—o—l—o—r—"— —s—t—r—o—k—e—-—w—i—d—t—h—=—"—2—"—>—<—p—o—l—y—l—i—n—e— —p—o—i—n—t—s—=—"—2—3— —6— —1—3—.—5— —1—5—.—5— —8—.—5— —1—0—.—5— —1— —1—8—"—/—>—<—p—o—l—y—l—i—n—e— —p—o—i—n—t—s—=—"—1—7— —6— —2—3— —6— —2—3— —1—2—"—/—>—<—/—s—v—g—>—
+— — — — — — — — — — — — —<—s—p—a—n—>—R—u—n— —P—l—a—c—e—m—e—n—t— —A—n—a—l—y—s—i—s—<—/—s—p—a—n—>—
+— — — — — — — — —<—/—b—u—t—t—o—n—>—
+— — — — —<—/—s—e—c—t—i—o—n—>—
+—
+— — — — —<—!—-—-— —M—a—i—n— —P—r—e—d—i—c—t—i—o—n— —L—a—y—o—u—t— —-—-—>—
+— — — — —<—d—i—v— —c—l—a—s—s—=—"—d—a—s—h—b—o—a—r—d—-—g—r—i—d—"—>—
+—
+— — — — — — — — —<—!—-—-— —L—e—f—t— —C—o—l—u—m—n—:— —G—a—u—g—e— —&— —P—r—e—d—i—c—t—i—o—n— —R—e—s—u—l—t— —-—-—>—
+— — — — — — — — —<—d—i—v— —c—l—a—s—s—=—"—c—o—l—-—6—"—>—
+— — — — — — — — — — — — —<—s—e—c—t—i—o—n— —c—l—a—s—s—=—"—c—a—r—d—"—>—
+— — — — — — — — — — — — — — — — —<—d—i—v— —c—l—a—s—s—=—"—c—a—r—d—-—h—e—a—d—e—r—"—>—
+— — — — — — — — — — — — — — — — — — — — —<—d—i—v— —c—l—a—s—s—=—"—c—a—r—d—-—t—i—t—l—e—-—g—r—o—u—p—"—>—
+— — — — — — — — — — — — — — — — — — — — — — — — —<—d—i—v— —c—l—a—s—s—=—"—c—a—r—d—-—i—c—o—n—"— —s—t—y—l—e—=—"—b—a—c—k—g—r—o—u—n—d—:— —r—g—b—a—(—1—6—,— —1—8—5—,— —1—2—9—,— —0—.—1—2—)—;— —c—o—l—o—r—:— —v—a—r—(—-—-—c—o—l—o—r—-—s—u—c—c—e—s—s—)—;—"—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — —<—s—v—g— —v—i—e—w—B—o—x—=—"—0— —0— —2—4— —2—4—"— —f—i—l—l—=—"—n—o—n—e—"— —s—t—r—o—k—e—=—"—c—u—r—r—e—n—t—C—o—l—o—r—"— —s—t—r—o—k—e—-—w—i—d—t—h—=—"—2—"—>—<—p—a—t—h— —d—=—"—M—2—2— —1—1—.—0—8—V—1—2—a—1—0— —1—0— —0— —1— —1—-—5—.—9—3—-—9—.—1—4—"—/—>—<—p—o—l—y—l—i—n—e— —p—o—i—n—t—s—=—"—2—2— —4— —1—2— —1—4—.—0—1— —9— —1—1—.—0—1—"—/—>—<—/—s—v—g—>—
+— — — — — — — — — — — — — — — — — — — — — — — — —<—/—d—i—v—>—
+— — — — — — — — — — — — — — — — — — — — — — — — —<—h—2—>—P—l—a—c—e—m—e—n—t— —R—e—a—d—i—n—e—s—s— —S—c—o—r—e—<—/—h—2—>—
+— — — — — — — — — — — — — — — — — — — — —<—/—d—i—v—>—
+— — — — — — — — — — — — — — — — — — — — —<—s—p—a—n— —c—l—a—s—s—=—"—b—a—d—g—e— —b—a—d—g—e—-—s—u—c—c—e—s—s—"— —i—d—=—"—r—e—a—d—i—n—e—s—s—-—t—i—e—r—-—b—a—d—g—e—"—>—<—s—p—a—n— —c—l—a—s—s—=—"—b—a—d—g—e—-—d—o—t—"—>—<—/—s—p—a—n—>— —<—s—p—a—n— —i—d—=—"—r—e—a—d—i—n—e—s—s—-—t—i—e—r—-—t—e—x—t—"—>—R—e—a—d—y—<—/—s—p—a—n—>—<—/—s—p—a—n—>—
+— — — — — — — — — — — — — — — — —<—/—d—i—v—>—
+—
+— — — — — — — — — — — — — — — — —<—d—i—v— —c—l—a—s—s—=—"—c—a—r—d—-—b—o—d—y—"—>—
+— — — — — — — — — — — — — — — — — — — — —<—d—i—v— —c—l—a—s—s—=—"—g—a—u—g—e—-—c—a—r—d—-—b—o—d—y—"— —s—t—y—l—e—=—"—p—a—d—d—i—n—g—:— —v—a—r—(—-—-—s—p—a—c—e—-—x—l—)— —0—;—"—>—
+— — — — — — — — — — — — — — — — — — — — — — — — —<—!—-—-— —C—i—r—c—u—l—a—r— —G—a—u—g—e— —V—i—s—u—a—l—i—z—a—t—i—o—n— —-—-—>—
+— — — — — — — — — — — — — — — — — — — — — — — — —<—d—i—v— —c—l—a—s—s—=—"—g—a—u—g—e—-—w—r—a—p—p—e—r—"—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — —<—s—v—g— —c—l—a—s—s—=—"—g—a—u—g—e—-—s—v—g—"— —v—i—e—w—B—o—x—=—"—0— —0— —1—6—0— —1—6—0—"—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — —<—d—e—f—s—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — —<—l—i—n—e—a—r—G—r—a—d—i—e—n—t— —i—d—=—"—g—a—u—g—e—-—g—r—a—d—i—e—n—t—"— —x—1—=—"—0—%—"— —y—1—=—"—0—%—"— —x—2—=—"—1—0—0—%—"— —y—2—=—"—1—0—0—%—"—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — —<—s—t—o—p— —o—f—f—s—e—t—=—"—0—%—"— —s—t—o—p—-—c—o—l—o—r—=—"—v—a—r—(—-—-—c—o—l—o—r—-—p—r—i—m—a—r—y—)—"— —/—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — —<—s—t—o—p— —o—f—f—s—e—t—=—"—1—0—0—%—"— —s—t—o—p—-—c—o—l—o—r—=—"—v—a—r—(—-—-—c—o—l—o—r—-—a—c—c—e—n—t—)—"— —/—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — —<—/—l—i—n—e—a—r—G—r—a—d—i—e—n—t—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — —<—/—d—e—f—s—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — —<—c—i—r—c—l—e— —c—l—a—s—s—=—"—g—a—u—g—e—-—b—g—"— —c—x—=—"—8—0—"— —c—y—=—"—8—0—"— —r—=—"—7—0—"— —/—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — —<—c—i—r—c—l—e— —c—l—a—s—s—=—"—g—a—u—g—e—-—f—i—l—l—-—a—r—c—"— —i—d—=—"—g—a—u—g—e—-—f—i—l—l—-—a—r—c—"— —c—x—=—"—8—0—"— —c—y—=—"—8—0—"— —r—=—"—7—0—"— —/—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — —<—/—s—v—g—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — —<—d—i—v— —c—l—a—s—s—=—"—g—a—u—g—e—-—c—e—n—t—e—r—-—c—o—n—t—e—n—t—"—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — —<—s—p—a—n— —c—l—a—s—s—=—"—g—a—u—g—e—-—p—e—r—c—e—n—t—"— —i—d—=—"—g—a—u—g—e—-—p—e—r—c—e—n—t—"—>—-—-—%—<—/—s—p—a—n—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — —<—s—p—a—n— —c—l—a—s—s—=—"—g—a—u—g—e—-—c—a—p—t—i—o—n—"—>—R—e—a—d—i—n—e—s—s— —I—n—d—e—x—<—/—s—p—a—n—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — —<—/—d—i—v—>—
+— — — — — — — — — — — — — — — — — — — — — — — — —<—/—d—i—v—>—
+—
+— — — — — — — — — — — — — — — — — — — — — — — — —<—d—i—v— —s—t—y—l—e—=—"—t—e—x—t—-—a—l—i—g—n—:— —c—e—n—t—e—r—;— —m—a—r—g—i—n—-—t—o—p—:— —v—a—r—(—-—-—s—p—a—c—e—-—l—g—)—;— —m—a—x—-—w—i—d—t—h—:— —3—6—0—p—x—;—"—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — —<—p— —i—d—=—"—r—e—a—d—i—n—e—s—s—-—t—i—e—r—-—d—e—s—c—"— —s—t—y—l—e—=—"—f—o—n—t—-—s—i—z—e—:— —v—a—r—(—-—-—f—o—n—t—-—s—i—z—e—-—s—m—)—;— —c—o—l—o—r—:— —v—a—r—(—-—-—c—o—l—o—r—-—t—e—x—t—-—s—e—c—o—n—d—a—r—y—)—;—"—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — —C—l—i—c—k— —<—s—t—r—o—n—g—>—R—u—n— —P—l—a—c—e—m—e—n—t— —A—n—a—l—y—s—i—s—<—/—s—t—r—o—n—g—>— —t—o— —s—y—n—t—h—e—s—i—z—e— —y—o—u—r— —a—c—a—d—e—m—i—c— —G—P—A—,— —L—e—e—t—C—o—d—e— —m—e—t—r—i—c—s—,— —a—n—d— —G—i—t—H—u—b— —c—o—n—t—r—i—b—u—t—i—o—n—s— —t—h—r—o—u—g—h— —t—h—e— —X—G—B—o—o—s—t— —i—n—f—e—r—e—n—c—e— —m—o—d—e—l—.—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — —<—/—p—>—
+— — — — — — — — — — — — — — — — — — — — — — — — —<—/—d—i—v—>—
+— — — — — — — — — — — — — — — — — — — — —<—/—d—i—v—>—
+— — — — — — — — — — — — — — — — —<—/—d—i—v—>—
+— — — — — — — — — — — — —<—/—s—e—c—t—i—o—n—>—
+— — — — — — — — —<—/—d—i—v—>—
+—
+— — — — — — — — —<—!—-—-— —R—i—g—h—t— —C—o—l—u—m—n—:— —S—H—A—P— —F—e—a—t—u—r—e— —I—m—p—o—r—t—a—n—c—e— —&— —F—a—c—t—o—r— —B—r—e—a—k—d—o—w—n— —-—-—>—
+— — — — — — — — —<—d—i—v— —c—l—a—s—s—=—"—c—o—l—-—6—"—>—
+— — — — — — — — — — — — —<—s—e—c—t—i—o—n— —c—l—a—s—s—=—"—c—a—r—d—"—>—
+— — — — — — — — — — — — — — — — —<—d—i—v— —c—l—a—s—s—=—"—c—a—r—d—-—h—e—a—d—e—r—"—>—
+— — — — — — — — — — — — — — — — — — — — —<—d—i—v— —c—l—a—s—s—=—"—c—a—r—d—-—t—i—t—l—e—-—g—r—o—u—p—"—>—
+— — — — — — — — — — — — — — — — — — — — — — — — —<—d—i—v— —c—l—a—s—s—=—"—c—a—r—d—-—i—c—o—n—"— —s—t—y—l—e—=—"—b—a—c—k—g—r—o—u—n—d—:— —r—g—b—a—(—2—1—2—,— —1—7—5—,— —5—5—,— —0—.—1—2—)—;— —c—o—l—o—r—:— —v—a—r—(—-—-—c—o—l—o—r—-—p—r—i—m—a—r—y—)—;—"—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — —<—s—v—g— —v—i—e—w—B—o—x—=—"—0— —0— —2—4— —2—4—"— —f—i—l—l—=—"—n—o—n—e—"— —s—t—r—o—k—e—=—"—c—u—r—r—e—n—t—C—o—l—o—r—"— —s—t—r—o—k—e—-—w—i—d—t—h—=—"—2—"—>—<—l—i—n—e— —x—1—=—"—1—8—"— —y—1—=—"—2—0—"— —x—2—=—"—1—8—"— —y—2—=—"—1—0—"—/—>—<—l—i—n—e— —x—1—=—"—1—2—"— —y—1—=—"—2—0—"— —x—2—=—"—1—2—"— —y—2—=—"—4—"—/—>—<—l—i—n—e— —x—1—=—"—6—"— —y—1—=—"—2—0—"— —x—2—=—"—6—"— —y—2—=—"—1—4—"—/—>—<—/—s—v—g—>—
+— — — — — — — — — — — — — — — — — — — — — — — — —<—/—d—i—v—>—
+— — — — — — — — — — — — — — — — — — — — — — — — —<—h—2—>—K—e—y— —C—o—n—t—r—i—b—u—t—i—n—g— —F—a—c—t—o—r—s—<—/—h—2—>—
+— — — — — — — — — — — — — — — — — — — — —<—/—d—i—v—>—
+— — — — — — — — — — — — — — — — — — — — —<—s—p—a—n— —c—l—a—s—s—=—"—b—a—d—g—e— —b—a—d—g—e—-—i—n—f—o—"—>—R—e—l—a—t—i—v—e— —I—m—p—o—r—t—a—n—c—e—<—/—s—p—a—n—>—
+— — — — — — — — — — — — — — — — —<—/—d—i—v—>—
+—
+— — — — — — — — — — — — — — — — —<—d—i—v— —c—l—a—s—s—=—"—c—a—r—d—-—b—o—d—y—"—>—
+— — — — — — — — — — — — — — — — — — — — —<—d—i—v— —c—l—a—s—s—=—"—s—e—c—t—i—o—n—-—s—u—b—t—i—t—l—e—"—>—T—o—p— —M—o—d—e—l— —I—n—f—l—u—e—n—c—e— —D—i—m—e—n—s—i—o—n—s—<—/—d—i—v—>—
+— — — — — — — — — — — — — — — — — — — — —<—d—i—v— —c—l—a—s—s—=—"—f—e—a—t—u—r—e—-—i—n—f—l—u—e—n—c—e—-—l—i—s—t—"— —i—d—=—"—f—e—a—t—u—r—e—-—i—n—f—l—u—e—n—c—e—-—l—i—s—t—"—>—
+— — — — — — — — — — — — — — — — — — — — — — — — —<—d—i—v— —c—l—a—s—s—=—"—i—n—f—l—u—e—n—c—e—-—i—t—e—m—"—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — —<—s—p—a—n— —c—l—a—s—s—=—"—n—a—m—e—"—>—D—a—t—a— —S—t—r—u—c—t—u—r—e—s— —&—a—m—p—;— —A—l—g—o—r—i—t—h—m—s— —S—c—o—r—e—<—/—s—p—a—n—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — —<—s—p—a—n— —c—l—a—s—s—=—"—i—m—p—a—c—t—-—p—o—s—"—>—+—2—6—%— —I—m—p—a—c—t—<—/—s—p—a—n—>—
+— — — — — — — — — — — — — — — — — — — — — — — — —<—/—d—i—v—>—
+— — — — — — — — — — — — — — — — — — — — — — — — —<—d—i—v— —c—l—a—s—s—=—"—i—n—f—l—u—e—n—c—e—-—i—t—e—m—"—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — —<—s—p—a—n— —c—l—a—s—s—=—"—n—a—m—e—"—>—C—u—m—u—l—a—t—i—v—e— —G—P—A— —(—A—c—a—d—e—m—i—c— —S—t—a—n—d—i—n—g—)—<—/—s—p—a—n—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — —<—s—p—a—n— —c—l—a—s—s—=—"—i—m—p—a—c—t—-—p—o—s—"—>—+—2—1—%— —I—m—p—a—c—t—<—/—s—p—a—n—>—
+— — — — — — — — — — — — — — — — — — — — — — — — —<—/—d—i—v—>—
+— — — — — — — — — — — — — — — — — — — — — — — — —<—d—i—v— —c—l—a—s—s—=—"—i—n—f—l—u—e—n—c—e—-—i—t—e—m—"—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — —<—s—p—a—n— —c—l—a—s—s—=—"—n—a—m—e—"—>—L—e—e—t—C—o—d—e— —C—o—n—s—i—s—t—e—n—c—y— —&—a—m—p—;— —C—o—n—t—e—s—t— —R—a—t—i—n—g—<—/—s—p—a—n—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — —<—s—p—a—n— —c—l—a—s—s—=—"—i—m—p—a—c—t—-—p—o—s—"—>—+—1—8—%— —I—m—p—a—c—t—<—/—s—p—a—n—>—
+— — — — — — — — — — — — — — — — — — — — — — — — —<—/—d—i—v—>—
+— — — — — — — — — — — — — — — — — — — — — — — — —<—d—i—v— —c—l—a—s—s—=—"—i—n—f—l—u—e—n—c—e—-—i—t—e—m—"—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — —<—s—p—a—n— —c—l—a—s—s—=—"—n—a—m—e—"—>—A—c—t—i—v—e— —P—r—o—j—e—c—t—s— —&—a—m—p—;— —G—i—t—H—u—b— —A—c—t—i—v—i—t—y—<—/—s—p—a—n—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — —<—s—p—a—n— —c—l—a—s—s—=—"—i—m—p—a—c—t—-—p—o—s—"—>—+—1—4—%— —I—m—p—a—c—t—<—/—s—p—a—n—>—
+— — — — — — — — — — — — — — — — — — — — — — — — —<—/—d—i—v—>—
+— — — — — — — — — — — — — — — — — — — — — — — — —<—d—i—v— —c—l—a—s—s—=—"—i—n—f—l—u—e—n—c—e—-—i—t—e—m—"—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — —<—s—p—a—n— —c—l—a—s—s—=—"—n—a—m—e—"—>—S—o—f—t— —S—k—i—l—l—s— —&—a—m—p—;— —C—o—m—m—u—n—i—c—a—t—i—o—n— —S—c—o—r—e—<—/—s—p—a—n—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — —<—s—p—a—n— —c—l—a—s—s—=—"—i—m—p—a—c—t—-—n—e—g—"— —i—d—=—"—c—o—m—m—-—i—n—f—l—u—e—n—c—e—"—>—-—7—%— —G—a—p—<—/—s—p—a—n—>—
+— — — — — — — — — — — — — — — — — — — — — — — — —<—/—d—i—v—>—
+— — — — — — — — — — — — — — — — — — — — —<—/—d—i—v—>—
+—
+— — — — — — — — — — — — — — — — — — — — —<—d—i—v— —s—t—y—l—e—=—"—m—a—r—g—i—n—-—t—o—p—:— —v—a—r—(—-—-—s—p—a—c—e—-—x—l—)—;— —p—a—d—d—i—n—g—:— —v—a—r—(—-—-—s—p—a—c—e—-—m—d—)—;— —b—a—c—k—g—r—o—u—n—d—:— —r—g—b—a—(—2—1—2—,— —1—7—5—,— —5—5—,— —0—.—0—5—)—;— —b—o—r—d—e—r—:— —1—p—x— —d—a—s—h—e—d— —r—g—b—a—(—2—1—2—,— —1—7—5—,— —5—5—,— —0—.—2—5—)—;— —b—o—r—d—e—r—-—r—a—d—i—u—s—:— —v—a—r—(—-—-—r—a—d—i—u—s—-—m—d—)—;—"—>—
+— — — — — — — — — — — — — — — — — — — — — — — — —<—d—i—v— —s—t—y—l—e—=—"—f—o—n—t—-—s—i—z—e—:— —v—a—r—(—-—-—f—o—n—t—-—s—i—z—e—-—x—s—)—;— —f—o—n—t—-—w—e—i—g—h—t—:— —v—a—r—(—-—-—f—o—n—t—-—w—e—i—g—h—t—-—s—e—m—i—b—o—l—d—)—;— —c—o—l—o—r—:— —v—a—r—(—-—-—c—o—l—o—r—-—p—r—i—m—a—r—y—-—l—i—g—h—t—)—;— —m—a—r—g—i—n—-—b—o—t—t—o—m—:— —4—p—x—;—"—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — —M—o—d—e—l— —A—r—c—h—i—t—e—c—t—u—r—e— —N—o—t—e—
+— — — — — — — — — — — — — — — — — — — — — — — — —<—/—d—i—v—>—
+— — — — — — — — — — — — — — — — — — — — — — — — —<—d—i—v— —s—t—y—l—e—=—"—f—o—n—t—-—s—i—z—e—:— —v—a—r—(—-—-—f—o—n—t—-—s—i—z—e—-—x—s—)—;— —c—o—l—o—r—:— —v—a—r—(—-—-—c—o—l—o—r—-—t—e—x—t—-—s—e—c—o—n—d—a—r—y—)—;— —l—i—n—e—-—h—e—i—g—h—t—:— —1—.—5—;—"—>—
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — —I—n—f—e—r—e—n—c—e— —e—n—f—o—r—c—e—s— —s—i—n—g—l—e—-—r—o—w— —s—c—a—l—a—r— —t—r—a—n—s—f—o—r—m—s— —u—s—i—n—g— —p—r—e—-—f—i—t—t—e—d— —<—c—o—d—e—>—S—t—a—n—d—a—r—d—S—c—a—l—e—r—<—/—c—o—d—e—>— —p—a—r—a—m—e—t—e—r—s— —w—i—t—h— —S—H—A—-—2—5—6— —v—e—r—i—f—i—e—d— —c—h—e—c—k—p—o—i—n—t—s— —t—o— —g—u—a—r—a—n—t—e—e— —r—e—p—r—o—d—u—c—i—b—l—e— —p—r—e—d—i—c—t—i—o—n—s— —u—n—d—e—r— —2—m—s—.—
+— — — — — — — — — — — — — — — — — — — — — — — — —<—/—d—i—v—>—
+— — — — — — — — — — — — — — — — — — — — —<—/—d—i—v—>—
+— — — — — — — — — — — — — — — — —<—/—d—i—v—>—
+— — — — — — — — — — — — —<—/—s—e—c—t—i—o—n—>—
+— — — — — — — — —<—/—d—i—v—>—
+—
+— — — — —<—/—d—i—v—>—
+—
+— — — — —<—!—-—-— —S—c—r—i—p—t—s— —-—-—>—
+— — — — —<—s—c—r—i—p—t— —s—r—c—=—"—j—s—/—a—p—i—.—j—s—"—>—<—/—s—c—r—i—p—t—>—
+— — — — —<—s—c—r—i—p—t— —s—r—c—=—"—j—s—/—a—u—t—h—.—j—s—"—>—<—/—s—c—r—i—p—t—>—
+— — — — —<—s—c—r—i—p—t— —s—r—c—=—"—j—s—/—n—a—v—.—j—s—"—>—<—/—s—c—r—i—p—t—>—
+— — — — —<—s—c—r—i—p—t— —s—r—c—=—"—j—s—/—p—l—a—c—e—m—e—n—t—.—j—s—"—>—<—/—s—c—r—i—p—t—>—
+—<—/—b—o—d—y—>—
+—<—/—h—t—m—l—>—
+—
