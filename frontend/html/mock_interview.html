@@ -1320,34 +1320,68 @@
         // ---------------------------------------------------------------------
         submitEvaluationBtn.addEventListener('click', () => {
             stopTimer();
-            stopRecording();
 
             // Loading state with cyber steps
             submitEvaluationBtn.disabled = true;
             submitBtnLabel.innerText = 'Running Neural Evaluation...';
             submitEvaluationBtn.className = 'flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed';
 
-            setTimeout(() => {
-                // Calculate dynamic evaluation based on actual content
-                const text = writtenResponseInput.value.trim().toLowerCase();
-                const wordCount = text ? text.split(/\s+/).length : 0;
-                
-                let score = 60;
-                let summary = 'Basic response provided. Expand on system architecture, trade-offs, and edge cases.';
-                if (wordCount > 60) {
-                    score = 92;
-                    summary = 'Comprehensive response demonstrating structured problem solving, clear architecture, and solid grasp of trade-offs.';
-                } else if (wordCount > 25) {
-                    score = 82;
-                    summary = 'Good technical foundation. Consider providing deeper complexity analysis and concrete operational metrics.';
-                } else if (wordCount > 5) {
-                    score = 70;
-                    summary = 'Brief response detected. Elaboration on key algorithmic steps and failure recovery will boost score.';
-                }
 
-                let grade = score >= 90 ? 'Strong Hire' : (score >= 78 ? 'Hire' : (score >= 65 ? 'Borderline' : 'Needs Work'));
+            if (isRecording && speechRecognition) {
+                let evaluated = false;
+                const onFinish = () => {
+                    if (!evaluated) {
+                        evaluated = true;
+                        proceedWithEvaluation();
+                    }
+                };
+                const prevOnEnd = speechRecognition.onend;
+                speechRecognition.onend = (ev) => {
+                    if (prevOnEnd) prevOnEnd(ev);
+                    onFinish();
+                };
+                stopRecording();
+                setTimeout(onFinish, 400);
+            } else {
+                stopRecording();
+                proceedWithEvaluation();
+            }
 
-                renderEvaluation(score, grade, summary);
+            function proceedWithEvaluation() {
+                setTimeout(() => {
+                    // Calculate dynamic evaluation based on actual content & expected keywords
+                    const text = writtenResponseInput.value.trim().toLowerCase();
+                    const wordCount = text ? text.split(/\s+/).length : 0;
+                    const keywords = (activeQuestion && activeQuestion.expectedKeywords) ? activeQuestion.expectedKeywords : [];
+                    const matchedKeywords = keywords.filter(kw => text.includes(kw.toLowerCase()));
+                    const keywordHitRatio = keywords.length > 0 ? (matchedKeywords.length / keywords.length) : 0;
+
+                    let score = 55;
+                    let summary = 'Basic response provided. Expand on system architecture, trade-offs, and edge cases.';
+
+                    if (matchedKeywords.length > 0 || wordCount > 0) {
+                        const keywordScore = Math.round(keywordHitRatio * 40);
+                        let elaborationScore = 30;
+                        if (wordCount > 60) elaborationScore = 55;
+                        else if (wordCount > 25) elaborationScore = 45;
+                        else if (wordCount > 5) elaborationScore = 35;
+
+                        score = Math.min(98, Math.max(50, keywordScore + elaborationScore));
+
+                        if (score >= 90) {
+                            summary = `Exceptional response hitting key concepts (${matchedKeywords.join(', ') || 'comprehensive domain knowledge'}) with rigorous technical depth and trade-off awareness.`;
+                        } else if (score >= 78) {
+                            summary = `Strong technical foundation covering key architectural concepts (${matchedKeywords.join(', ') || 'solid terminology'}). Deepen concrete operational metrics for stronger impact.`;
+                        } else if (score >= 65) {
+                            summary = `Satisfactory answer. To elevate your rating, directly incorporate core architectural terms like: ${keywords.slice(0, 3).join(', ')}.`;
+                        } else {
+                            summary = `Brief response detected. Elaboration on expected terms (${keywords.slice(0, 3).join(', ')}) and failure recovery strategies will boost your score.`;
+                        }
+                    }
+
+                    let grade = score >= 90 ? 'Strong Hire' : (score >= 78 ? 'Hire' : (score >= 65 ? 'Borderline' : 'Needs Work'));
+
+                    renderEvaluation(score, grade, summary);
 
                 // Reset button state
                 submitEvaluationBtn.disabled = false;

@@ -81,8 +81,8 @@ async function fetchMetrics() {
         }
 
         // 3. Render loading skeletons for active platforms, or empty state for missing ones
-        const ghBadge = document.getElementById("github-sync-badge");
-        const lcBadge = document.getElementById("leetcode-sync-badge");
+        const ghBadge = (document.getElementById("github-sync-status") || document.getElementById("github-sync-badge"));
+        const lcBadge = (document.getElementById("leetcode-sync-status") || document.getElementById("leetcode-sync-badge"));
 
         if (ghHandle) {
             if (ghBadge) {
@@ -161,7 +161,7 @@ async function fetchMetrics() {
         // 5. Render GitHub stats or partial fallback
         if (ghHandle) {
             if (responseData && responseData.github) {
-                const ghBadgeEl = document.getElementById("github-sync-badge");
+                const ghBadgeEl = (document.getElementById("github-sync-status") || document.getElementById("github-sync-badge"));
                 const ghCommits = document.getElementById("metric-github-commits");
                 const ghRepos = document.getElementById("metric-github-repos");
                 if (ghCommits && ghBadgeEl) {
@@ -173,7 +173,7 @@ async function fetchMetrics() {
                     renderGithubStats(responseData.github, ghHandle);
                 }
             } else {
-                const ghBadgeEl = document.getElementById("github-sync-badge");
+                const ghBadgeEl = (document.getElementById("github-sync-status") || document.getElementById("github-sync-badge"));
                 if (ghBadgeEl) {
                     ghBadgeEl.className = "badge badge-danger";
                     ghBadgeEl.innerHTML = '<span class="badge-dot"></span> Sync Failed';
@@ -190,7 +190,7 @@ async function fetchMetrics() {
         // 6. Render LeetCode stats or partial fallback
         if (lcHandle) {
             if (responseData && responseData.leetcode) {
-                const lcBadgeEl = document.getElementById("leetcode-sync-badge");
+                const lcBadgeEl = (document.getElementById("leetcode-sync-status") || document.getElementById("leetcode-sync-badge"));
                 const lcSolved = document.getElementById("metric-leetcode-solved");
                 const lcRating = document.getElementById("metric-leetcode-rating");
                 if (lcSolved && lcBadgeEl) {
@@ -202,7 +202,7 @@ async function fetchMetrics() {
                     renderLeetcodeStats(responseData.leetcode, lcHandle);
                 }
             } else {
-                const lcBadgeEl = document.getElementById("leetcode-sync-badge");
+                const lcBadgeEl = (document.getElementById("leetcode-sync-status") || document.getElementById("leetcode-sync-badge"));
                 if (lcBadgeEl) {
                     lcBadgeEl.className = "badge badge-danger";
                     lcBadgeEl.innerHTML = '<span class="badge-dot"></span> Sync Failed';
