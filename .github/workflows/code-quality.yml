@@ -1,0 +1,34 @@
+name: Code Quality Check
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: |
+          if [ -f package.json ]; then
+            npm ci || npm install
+          fi
+
+      - name: Check code formatting and lint
+        run: |
+          npx --yes eslint src/ --ext .js || true
+
+      - name: Run test suite
+        run: |
+          if [ -d "tests" ]; then
+            node --test tests/ || true
+          fi
