@@ -19,16 +19,18 @@ jobs:
 
       - name: Install dependencies
         run: |
-          if [ -f package.json ]; then
-            npm ci || npm install
+          if [ -f package-lock.json ]; then
+            npm ci
+          elif [ -f package.json ]; then
+            npm install
           fi
 
       - name: Check code formatting and lint
         run: |
-          npx --yes eslint src/ --ext .js || true
+          npx --yes eslint src/ frontend/js/ --ext .js
 
       - name: Run test suite
         run: |
           if [ -d "tests" ]; then
-            node --test tests/ || true
+            node --test tests/
           fi

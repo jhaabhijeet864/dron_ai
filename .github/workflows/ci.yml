@@ -13,7 +13,7 @@ jobs:
       - name: Run actionlint
         uses: reviewdog/action-actionlint@v1
         with:
-          fail_level: none
+          fail_level: error
 
   security-scan:
     name: opengrep-diff
@@ -24,7 +24,6 @@ jobs:
           fetch-depth: 0
       - name: Run OpenGrep
         uses: platform-sec/opengrep-action@v1
-        continue-on-error: true
         with:
           target: .
 
@@ -44,6 +43,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f requirements-optional.txt ]; then pip install -r requirements-optional.txt; fi
           pip install flake8 pytest
 
       - name: Lint backend code

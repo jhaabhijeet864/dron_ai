@@ -366,6 +366,7 @@ class TestXGBoostModel:
 
     def test_prediction_with_shap_enabled(self, trained_predictor):
         """Test that SHAP explanations can be computed on demand."""
+        pytest.importorskip("shap", reason="shap is an optional dependency")
         sample_features = np.array([8.5, 90.0, 0, 85, 90, 75, 80, 120, 350, 80, 5, 88, 3], dtype=np.float64)
         result = trained_predictor.predict(sample_features, include_shap=True)
 
