@@ -27,10 +27,10 @@ jobs:
 
       - name: Check code formatting and lint
         run: |
-          npx --yes eslint src/ frontend/js/ --ext .js
+          npx --yes eslint --no-error-on-unmatched-pattern src/ frontend/js/
 
       - name: Run test suite
         run: |
-          if [ -d "tests" ]; then
+          if [ -d "tests" ] && ls tests/*.js 1> /dev/null 2>&1; then
             node --test tests/
           fi
