@@ -118,7 +118,6 @@ def load_models(app=None):
 
 def get_placement_model():
     """Get the singleton PlacementPredictor instance using double-checked locking."""
-    global _placement_model
     if _placement_model is None:
         with _lock:
             if _placement_model is None:
@@ -128,7 +127,6 @@ def get_placement_model():
 
 def get_career_recommender():
     """Get the singleton CareerRecommender instance using double-checked locking."""
-    global _career_recommender
     if _career_recommender is None:
         with _lock:
             if _career_recommender is None:
