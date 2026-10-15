@@ -1,0 +1,36 @@
+name: Code Quality Check
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          elif [ -f package.json ]; then
+            npm install
+          fi
+
+      - name: Check code formatting and lint
+        run: |
+          npx --yes eslint --no-error-on-unmatched-pattern src/ frontend/js/
+
+      - name: Run test suite
+        run: |
+          if [ -d "tests" ] && ls tests/*.js 1> /dev/null 2>&1; then
+            node --test tests/
+          fi
