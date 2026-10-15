@@ -364,6 +364,31 @@ class TestXGBoostModel:
         assert new_predictor.is_trained
         assert new_predictor.scaler is None
 
+    def test_prediction_with_shap_enabled(self, trained_predictor):
+        """Test that SHAP explanations can be computed on demand."""
+        sample_features = np.array([8.5, 90.0, 0, 85, 90, 75, 80, 120, 350, 80, 5, 88, 3], dtype=np.float64)
+        result = trained_predictor.predict(sample_features, include_shap=True)
+
+        assert "shap_values" in result
+        assert len(result["shap_values"]) == 13
+        assert all(isinstance(v, float) for v in result["shap_values"].values())
+
+    def test_prediction_shap_missing_dependency_raises_runtime_error(self, trained_predictor, monkeypatch):
+        """Test that requesting SHAP without the dependency raises an informative RuntimeError."""
+        import builtins
+        real_import = builtins.__import__
+
+        def fake_import(name, *args, **kwargs):
+            if name == "shap":
+                raise ImportError("No module named 'shap'")
+            return real_import(name, *args, **kwargs)
+
+        monkeypatch.setattr(builtins, "__import__", fake_import)
+        sample_features = np.array([8.5, 90.0, 0, 85, 90, 75, 80, 120, 350, 80, 5, 88, 3], dtype=np.float64)
+
+        with pytest.raises(RuntimeError, match="SHAP explanations require the optional 'shap' dependency"):
+            trained_predictor.predict(sample_features, include_shap=True)
+
 
 class TestCosineRecommender:
     """Tests for Cosine Similarity career recommender."""

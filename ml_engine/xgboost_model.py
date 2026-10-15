@@ -18,7 +18,6 @@ from typing import Dict, Any, Optional, Tuple, List, Union
 import numpy as np
 import pandas as pd
 import joblib
-import shap
 from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import (
@@ -84,7 +83,7 @@ class PlacementPredictor:
         self.n_jobs = n_jobs
         self._cached_feature_importance: Optional[Dict[str, float]] = None
         self._cached_top_factors: Optional[List[str]] = None
-        self._explainer: Optional[shap.TreeExplainer] = None
+        self._explainer: Optional[Any] = None
 
     def train(
         self,
@@ -245,6 +244,13 @@ class PlacementPredictor:
 
         # Optional SHAP Values (Explainable AI)
         if include_shap:
+            try:
+                import shap
+            except ImportError as exc:
+                raise RuntimeError(
+                    "SHAP explanations require the optional 'shap' dependency"
+                ) from exc
+
             if self._explainer is None:
                 self._explainer = shap.TreeExplainer(self.model)
             

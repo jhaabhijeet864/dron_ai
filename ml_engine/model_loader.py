@@ -24,17 +24,29 @@ _lock = threading.Lock()
 
 def _get_config_paths(app=None):
     """Extract model directory and career vectors path from Flask app config or defaults."""
+    env_model_dir = os.environ.get("ML_MODEL_DIR")
+    default_model_dir = env_model_dir if env_model_dir else "ml_engine/saved_models"
+    env_career_vectors = os.environ.get("CAREER_VECTORS_PATH")
+
     if app is not None and hasattr(app, "config"):
-        model_dir = app.config.get("ML_MODEL_DIR", "ml_engine/saved_models")
-        career_vectors_path = app.config.get("CAREER_VECTORS_PATH", None)
+        if isinstance(app.config, dict):
+            model_dir = app.config.get("ML_MODEL_DIR") or default_model_dir
+            career_vectors_path = app.config.get("CAREER_VECTORS_PATH", env_career_vectors)
+        else:
+            model_dir = getattr(app.config, "get", lambda k, d=None: d)("ML_MODEL_DIR", default_model_dir)
+            if model_dir is None:
+                model_dir = default_model_dir
+            career_vectors_path = getattr(app.config, "get", lambda k, d=None: d)("CAREER_VECTORS_PATH", env_career_vectors)
     else:
         try:
             from flask import current_app
-            model_dir = current_app.config.get("ML_MODEL_DIR", "ml_engine/saved_models")
-            career_vectors_path = current_app.config.get("CAREER_VECTORS_PATH", None)
+            model_dir = current_app.config.get("ML_MODEL_DIR", default_model_dir)
+            if model_dir is None:
+                model_dir = default_model_dir
+            career_vectors_path = current_app.config.get("CAREER_VECTORS_PATH", env_career_vectors)
         except Exception:
-            model_dir = "ml_engine/saved_models"
-            career_vectors_path = None
+            model_dir = default_model_dir
+            career_vectors_path = env_career_vectors
     return model_dir, career_vectors_path
 
 
