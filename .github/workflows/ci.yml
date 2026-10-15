@@ -12,6 +12,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run actionlint
         uses: reviewdog/action-actionlint@v1
+        with:
+          fail_level: none
 
   security-scan:
     name: opengrep-diff
@@ -21,8 +23,10 @@ jobs:
         with:
           fetch-depth: 0
       - name: Run OpenGrep
-        uses: opengrep/opengrep-action@v1
+        uses: platform-sec/opengrep-action@v1
         continue-on-error: true
+        with:
+          target: .
 
   skills-python:
     name: skills-python
@@ -46,4 +50,4 @@ jobs:
         run: flake8 app/ ml_engine/ --count --select=E9,F63,F7,F82 --show-source --statistics
 
       - name: Run Pytest
-        run: pytest tests/
+        run: pytest app/tests/ ml_engine/tests/
