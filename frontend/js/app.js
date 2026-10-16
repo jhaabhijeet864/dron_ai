@@ -865,11 +865,118 @@ function initLandingDashboard() {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// Real-Time Backend & ML Inference Engine Status Monitor
+// ═══════════════════════════════════════════════════════════════
+
+function getHealthEndpointUrl() {
+    if (typeof API_BASE_URL !== "undefined" && API_BASE_URL) {
+        return `${API_BASE_URL}/health`;
+    }
+    if (window.API_BASE_URL) {
+        return `${window.API_BASE_URL}/health`;
+    }
+    const isLocalStatic = window.location.port === "8000" || window.location.port === "5500" || window.location.port === "3000";
+    if (!isLocalStatic && window.location.origin && window.location.origin.startsWith("http")) {
+        return "/api/health";
+    }
+    return "http://localhost:5000/api/health";
+}
+
+async function checkSystemHealth() {
+    const pill = document.getElementById("system-status-pill");
+    const text = document.getElementById("system-status-text");
+
+    if (!pill || !text) return;
+
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2500);
+
+        const healthUrl = getHealthEndpointUrl();
+        const response = await fetch(healthUrl, {
+            method: "GET",
+            headers: { Accept: "application/json" },
+            signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+
+        let data = null;
+        if (response.ok || response.status === 503) {
+            try {
+                data = await response.json();
+            } catch (jsonErr) {
+                setSystemOffline(pill, text, `HTTP ${response.status}: Service Unavailable`);
+                return;
+            }
+        } else {
+            setSystemOffline(pill, text, `HTTP ${response.status}: Service Unavailable`);
+            return;
+        }
+
+        // System is ONLINE only when backend is running AND ML models are fully active
+        const isOnline = Boolean(
+            data &&
+            data.status === "online" &&
+            data.models_active === true &&
+            data.models &&
+            data.models.placement_model === true &&
+            data.models.career_recommender === true
+        );
+
+        if (isOnline) {
+            setSystemOnline(pill, text);
+        } else {
+            let reason = "ML Engine not activated";
+            if (data && data.models) {
+                if (!data.models.placement_model && !data.models.career_recommender) {
+                    reason = "Placement & Career models offline";
+                } else if (!data.models.placement_model) {
+                    reason = "Placement XGBoost model offline";
+                } else if (!data.models.career_recommender) {
+                    reason = "Career Recommender offline";
+                }
+            } else if (response.status === 503) {
+                reason = "ML Inference Service Unavailable";
+            }
+            setSystemOffline(pill, text, reason);
+        }
+    } catch (err) {
+        setSystemOffline(pill, text, "Backend API offline (connection refused)");
+    }
+}
+
+function setSystemOnline(pill, text) {
+    pill.classList.remove("offline", "checking");
+    pill.classList.add("online");
+    text.textContent = "SYSTEM ONLINE";
+    pill.title = "Backend & ML Inference Engine Live (XGBoost + Cosine Recommender Ready)";
+}
+
+function setSystemOffline(pill, text, reason = "Backend or ML models offline") {
+    pill.classList.remove("online", "checking");
+    pill.classList.add("offline");
+    text.textContent = "SYSTEM OFFLINE";
+    pill.title = `System Offline: ${reason}`;
+}
+
+function initSystemStatusMonitor() {
+    const pill = document.getElementById("system-status-pill");
+    if (!pill) return;
+
+    // Check immediately upon initial page render
+    checkSystemHealth();
+
+    // Poll every 5 seconds for real-time status updates
+    setInterval(checkSystemHealth, 5000);
+}
+
+// ═══════════════════════════════════════════════════════════════
 // Master DOMContentLoaded Dispatcher
 // ═══════════════════════════════════════════════════════════════
 document.addEventListener("DOMContentLoaded", () => {
     const profile = getStudentProfile();
     hydrateCommonUI(profile);
+    initSystemStatusMonitor();
 
     // Identify active view based on elements or pathname
     if (document.querySelector(".landing-hero-section") || document.querySelector(".hero-quote-text")) {
