@@ -207,7 +207,7 @@ function toggleTaskCheckbox(itemEl) {
     itemEl.classList.toggle("checked");
     const checkSpan = itemEl.querySelector(".custom-checkbox");
     if (checkSpan) {
-        checkSpan.textContent = itemEl.classList.contains("checked") ? "<i class="fa-solid fa-check"></i> " : "";
+        checkSpan.innerHTML = itemEl.classList.contains("checked") ? '<i class="fa-solid fa-check"></i> ' : "";
     }
 }
 

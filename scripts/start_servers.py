@@ -12,7 +12,7 @@ def main():
 
     print("\nBoth servers are running!")
     print(" - Backend: http://localhost:5000")
-    print(" - Frontend: http://localhost:8000")
+    print(" - Frontend: http://localhost:8000/html/index.html")
     print("\nPress Ctrl+C to stop both servers.")
 
     try:

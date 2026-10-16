@@ -177,6 +177,8 @@ function calculateCareerMatches(profile) {
 // Common UI Hydration (Header, Sidebar, User Initials)
 // ═══════════════════════════════════════════════════════════════
 function hydrateCommonUI(profile) {
+    if (!profile) return;
+
     // 1. Header Greeting & User Avatar
     const greetingEl = document.getElementById("header-greeting-name");
     if (greetingEl) {
@@ -186,6 +188,11 @@ function hydrateCommonUI(profile) {
     const sidebarNameEl = document.getElementById("sidebar-user-name");
     if (sidebarNameEl) {
         sidebarNameEl.textContent = profile.fullName || "Student Profile";
+    }
+
+    const sidebarRoleEl = document.getElementById("sidebar-user-role");
+    if (sidebarRoleEl && profile.branch) {
+        sidebarRoleEl.textContent = `${profile.branch} '${(profile.cohortYear || "2026").slice(-2)}`;
     }
 
     const sidebarMetaEl = document.getElementById("sidebar-user-meta");
@@ -263,12 +270,15 @@ function initInputPage() {
         const skill = chip.getAttribute("data-skill");
         if (selectedSkills.has(skill)) {
             chip.classList.add("active");
+            chip.setAttribute("aria-pressed", "true");
         } else {
             chip.classList.remove("active");
+            chip.setAttribute("aria-pressed", "false");
         }
 
         chip.addEventListener("click", () => {
-            chip.classList.toggle("active");
+            const isActive = chip.classList.toggle("active");
+            chip.setAttribute("aria-pressed", isActive ? "true" : "false");
         });
     });
 
@@ -311,16 +321,25 @@ function initInputPage() {
             const activeChips = document.querySelectorAll(".skill-chip.active");
             const skillsArray = Array.from(activeChips).map((c) => c.getAttribute("data-skill"));
 
+            const parseNum = (id, fallback) => {
+                const el = document.getElementById(id);
+                if (!el || el.value === undefined || el.value === null || el.value.trim() === "") {
+                    return fallback;
+                }
+                const num = Number(el.value);
+                return isNaN(num) ? fallback : num;
+            };
+
             const updatedProfile = {
                 ...profile,
                 fullName: document.getElementById("input-full-name")?.value || "Rohan Jha",
                 branch: document.getElementById("input-branch")?.value || "Computer Science & Engineering",
                 cohortYear: document.getElementById("input-cohort")?.value || "2026",
                 currentSem: document.getElementById("input-sem")?.value || "Semester 6",
-                tenthPct: Number(document.getElementById("input-tenth")?.value) || 90.0,
-                twelfthPct: Number(document.getElementById("input-twelfth")?.value) || 88.0,
-                cgpa: Number(document.getElementById("input-cgpa")?.value) || 8.5,
-                attendancePct: Number(document.getElementById("input-attendance")?.value) || 85.0,
+                tenthPct: parseNum("input-tenth", 90.0),
+                twelfthPct: parseNum("input-twelfth", 88.0),
+                cgpa: parseNum("input-cgpa", 8.5),
+                attendancePct: parseNum("input-attendance", 85.0),
                 activeBacklogs: Number(document.getElementById("input-backlogs")?.value) || 0,
                 technicalSkills: skillsArray,
                 softSkills: {
@@ -543,22 +562,52 @@ function renderPlacementGaugeChart(readinessScore) {
  */
 function renderCareerDirectionList(matches) {
     const container = document.getElementById("career-matches-container");
-    if (!container) return;
+    if (!container || !Array.isArray(matches)) return;
 
-    container.innerHTML = matches.slice(0, 3).map((match, idx) => `
-        <div class="career-item-card">
-            <div class="career-item-header">
-                <div class="career-title-wrap">
-                    <span class="career-rank-pill ${match.rankClass}">#${idx + 1}</span>
-                    <span class="career-name">${match.role}</span>
-                </div>
-                <span class="career-score-pill">${match.matchPct}% Match</span>
-            </div>
-            <div class="career-progress-bar-bg">
-                <div class="career-progress-fill ${match.fillClass}" style="width: ${match.matchPct}%;"></div>
-            </div>
-        </div>
-    `).join("");
+    container.replaceChildren();
+
+    matches.slice(0, 3).forEach((match, idx) => {
+        const card = document.createElement("div");
+        card.className = "career-item-card";
+
+        const header = document.createElement("div");
+        header.className = "career-item-header";
+
+        const titleWrap = document.createElement("div");
+        titleWrap.className = "career-title-wrap";
+
+        const rankPill = document.createElement("span");
+        rankPill.className = `career-rank-pill ${match.rankClass || ""}`.trim();
+        rankPill.textContent = `#${idx + 1}`;
+
+        const nameSpan = document.createElement("span");
+        nameSpan.className = "career-name";
+        nameSpan.textContent = match.role || "";
+
+        titleWrap.appendChild(rankPill);
+        titleWrap.appendChild(nameSpan);
+
+        const scorePill = document.createElement("span");
+        scorePill.className = "career-score-pill";
+        scorePill.textContent = `${match.matchPct}% Match`;
+
+        header.appendChild(titleWrap);
+        header.appendChild(scorePill);
+
+        const progressBg = document.createElement("div");
+        progressBg.className = "career-progress-bar-bg";
+
+        const progressFill = document.createElement("div");
+        progressFill.className = `career-progress-fill ${match.fillClass || ""}`.trim();
+        progressFill.style.width = `${match.matchPct}%`;
+
+        progressBg.appendChild(progressFill);
+
+        card.appendChild(header);
+        card.appendChild(progressBg);
+
+        container.appendChild(card);
+    });
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -743,20 +792,7 @@ function initRoadmapPage() {
     updateRoadmapProgress();
 }
 
-/**
- * Hydrate shared sidebar and header student profile indicators safely if elements exist.
- */
-function hydrateCommonUI(profile) {
-    if (!profile) return;
-    const nameEl = document.getElementById("sidebar-user-name");
-    const roleEl = document.getElementById("sidebar-user-role");
-    const avatarEl = document.getElementById("sidebar-user-avatar");
-    if (nameEl && profile.fullName) nameEl.textContent = profile.fullName;
-    if (roleEl && profile.branch) roleEl.textContent = `${profile.branch} '${(profile.cohortYear || "2026").slice(-2)}`;
-    if (avatarEl && profile.fullName) {
-        avatarEl.textContent = profile.fullName.trim().split(/\s+/).map((n) => n[0]).join("").substring(0, 2).toUpperCase();
-    }
-}
+
 
 // ═══════════════════════════════════════════════════════════════
 // Main Landing Dashboard Controller (Black & Gold Theme)

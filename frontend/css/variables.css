@@ -81,9 +81,9 @@
     --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
     --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.7);
     --shadow-xl: 0 20px 48px rgba(0, 0, 0, 0.85);
-    --shadow-glow: 0 0 15px rgba(212, 175, 55, 0.25);
-    --shadow-gold-hover: 0 0 25px rgba(212, 175, 55, 0.4);
-    --shadow-gold-focus: 0 0 0 3px rgba(212, 175, 55, 0.2), 0 0 18px rgba(212, 175, 55, 0.3);
+    --shadow-glow: none;
+    --shadow-gold-hover: 0 4px 16px rgba(0, 0, 0, 0.6);
+    --shadow-gold-focus: 0 0 0 2px rgba(212, 175, 55, 0.4);
     --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(243, 229, 171, 0.08);
 
     --glass-blur: blur(16px);
@@ -188,8 +188,8 @@
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
     --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
     --shadow-xl: 0 16px 40px rgba(0, 0, 0, 0.12);
-    --shadow-glow: 0 0 12px rgba(170, 124, 17, 0.15);
-    --shadow-gold-hover: 0 0 20px rgba(170, 124, 17, 0.25);
-    --shadow-gold-focus: 0 0 0 3px rgba(170, 124, 17, 0.15), 0 0 12px rgba(170, 124, 17, 0.2);
+    --shadow-glow: none;
+    --shadow-gold-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-gold-focus: 0 0 0 2px rgba(170, 124, 17, 0.3);
     --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(170, 124, 17, 0.06);
 }

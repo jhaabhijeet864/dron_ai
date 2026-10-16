@@ -1,0 +1,66 @@
+name: Backend & Security Checks
+
+on:
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+jobs:
+  actionlint:
+    name: actionlint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run actionlint
+        uses: reviewdog/action-actionlint@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-check
+          fail_level: error
+
+  security-scan:
+    name: opengrep-diff
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run OpenGrep
+        uses: platform-sec/opengrep-action@v1
+        continue-on-error: true
+        with:
+          target: .
+          strict: false
+
+  skills-python:
+    name: skills-python
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f requirements-optional.txt ]; then pip install -r requirements-optional.txt; fi
+          pip install flake8 pytest
+
+      - name: Lint backend code
+        run: flake8 app/ ml_engine/ --count --select=E9,F63,F7,F82 --show-source --statistics
+
+      - name: Run Pytest
+        run: pytest app/tests/ ml_engine/tests/

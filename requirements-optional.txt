@@ -1,0 +1,2 @@
+# --- Optional Dependencies for Explainable AI (SHAP) ---
+shap>=0.44.0,<1.0.0
