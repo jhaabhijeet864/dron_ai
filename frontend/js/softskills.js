@@ -235,13 +235,13 @@ function runPitchAnalysis() {
         let feedbackHTML = "";
 
         if (totalFillerCount > 2) {
-            feedbackHTML += `<i class="fa-solid fa-triangle-exclamation"></i>  <strong>Filler Word Alert:</strong> We noticed you used filler phrases like <em>"${detectedFillers.map(f => f.word + ' (' + f.count + ')').join(', ')}"</em>. Replace these with deliberate 1-second pauses.<br><br>`;
+            feedbackHTML += `⚠️ <strong>Filler Word Alert:</strong> We noticed you used filler phrases like <em>"${detectedFillers.map(f => f.word + ' (' + f.count + ')').join(', ')}"</em>. Replace these with deliberate 1-second pauses.<br><br>`;
         }
 
         if (detectedPower.length >= 3) {
-            feedbackHTML += `<i class="fa-solid fa-star"></i>  <strong>Great Engineering Impact:</strong> High-value action verbs detected: <code>${detectedPower.join(', ')}</code>.<br><br>`;
+            feedbackHTML += `🌟 <strong>Great Engineering Impact:</strong> High-value action verbs detected: <code>${detectedPower.join(', ')}</code>.<br><br>`;
         } else {
-            feedbackHTML += `<i class="fa-solid fa-lightbulb"></i>  <strong>Pro Tip:</strong> Strengthen your impact by using verbs like <em>architected, streamlined, deployed,</em> or <em>benchmarked</em> instead of passive phrases like "I worked on" or "we made".<br><br>`;
+            feedbackHTML += `💡 <strong>Pro Tip:</strong> Strengthen your impact by using verbs like <em>architected, streamlined, deployed,</em> or <em>benchmarked</em> instead of passive phrases like "I worked on" or "we made".<br><br>`;
         }
 
         if (totalWords >= 80 && totalWords <= 170 && totalFillerCount <= 1) {
@@ -330,12 +330,12 @@ function initSoftSkillsDiagnostic() {
                             parseInt(sTeam.value),
                             parseInt(sPresence.value)
                         ],
-                        backgroundColor: "rgba(255, 122, 0, 0.22)",
-                        borderColor: "#ff7a00",
-                        pointBackgroundColor: "#ff7a00",
+                        backgroundColor: "rgba(134, 239, 172, 0.25)",
+                        borderColor: "#22C55E",
+                        pointBackgroundColor: "#22C55E",
                         pointBorderColor: "#fff",
                         pointHoverBackgroundColor: "#fff",
-                        pointHoverBorderColor: "#ff7a00",
+                        pointHoverBorderColor: "#22C55E",
                         borderWidth: 2
                     },
                     {
@@ -362,16 +362,16 @@ function initSoftSkillsDiagnostic() {
                             backdropColor: "transparent"
                         },
                         grid: {
-                            color: "rgba(255, 255, 255, 0.08)"
+                            color: "#E5E7EB"
                         },
                         angleLines: {
-                            color: "rgba(255, 255, 255, 0.08)"
+                            color: "#E5E7EB"
                         },
                         pointLabels: {
-                            color: "#ffffff",
+                            color: "#111827",
                             font: {
                                 size: 11,
-                                family: "'Plus Jakarta Sans', sans-serif",
+                                family: "'Inter', sans-serif",
                                 weight: "600"
                             }
                         }
@@ -381,7 +381,7 @@ function initSoftSkillsDiagnostic() {
                     legend: {
                         position: "top",
                         labels: {
-                            color: "#ffffff",
+                            color: "#111827",
                             font: {
                                 size: 11,
                                 family: "'Plus Jakarta Sans', sans-serif"
@@ -393,7 +393,7 @@ function initSoftSkillsDiagnostic() {
                         backgroundColor: "#161f30",
                         borderColor: "rgba(255, 122, 0, 0.4)",
                         borderWidth: 1,
-                        titleColor: "#ff7a00",
+                        titleColor: "#22C55E",
                         bodyColor: "#ffffff"
                     }
                 }
@@ -497,7 +497,7 @@ Best regards,
 Rohan Jha`,
 
     coldemail: (company, name, role, jobId) =>
-`Subject: Application for ${role} (${jobId})  -  Rohan Jha (B.Tech CSE)
+`Subject: Application for ${role} (${jobId}) — Rohan Jha (B.Tech CSE)
 
 Dear ${name},
 
@@ -518,7 +518,7 @@ Sincerely,
 Rohan Jha`,
 
     thankyou: (company, name, role, jobId) =>
-`Subject: Thank You  -  Technical Interview for ${role}  -  Rohan Jha
+`Subject: Thank You — Technical Interview for ${role} — Rohan Jha
 
 Hi ${name},
 
@@ -532,7 +532,7 @@ Warm regards,
 Rohan Jha`,
 
     negotiate: (company, name, role, jobId) =>
-`Subject: Offer Discussion & Clarification  -  ${role}  -  Rohan Jha
+`Subject: Offer Discussion & Clarification — ${role} — Rohan Jha
 
 Dear ${name},
 
