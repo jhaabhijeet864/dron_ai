@@ -75,6 +75,59 @@ class TestGitHubFetcher:
             assert stats["total_repos"] == 0
             assert stats["total_commits"] == 0
 
+    def test_ttl_cache_expiration_and_casing(self):
+        """Test that cached entries hit cache within TTL and usernames are case-normalized."""
+        fetch_github_stats.cache_clear()
+
+        mock_user = MagicMock(status_code=200, json=lambda: {"public_repos": 3})
+        mock_repos = MagicMock(status_code=200, json=lambda: [])
+
+        with patch("requests.get", side_effect=[mock_user, mock_repos]) as mock_get:
+            res1 = fetch_github_stats("Alice_Test")
+            assert res1["total_repos"] == 3
+            assert mock_get.call_count == 2
+
+        # Second call with different casing hits cache (0 network calls)
+        with patch("requests.get") as mock_get_cached:
+            res2 = fetch_github_stats("alice_test")
+            mock_get_cached.assert_not_called()
+            assert res2["total_repos"] == 3
+
+    def test_cache_mutation_defense(self):
+        """Test that modifying returned stats does not mutate the in-memory cache."""
+        fetch_github_stats.cache_clear()
+
+        mock_user = MagicMock(status_code=200, json=lambda: {"public_repos": 2})
+        mock_repos = MagicMock(status_code=200, json=lambda: [{"name": "repo1", "fork": False, "language": "Python"}])
+        mock_commits = MagicMock(status_code=200, json=lambda: [{"sha": "1"}])
+
+        with patch("requests.get", side_effect=[mock_user, mock_repos, mock_commits]):
+            res1 = fetch_github_stats("mutation_tester")
+            assert "Python" in res1["languages"]
+
+            # Mutate local copy
+            res1["languages"].append("MALICIOUS_INPUT")
+            res1["total_repos"] = 999
+
+        # Subsequent fetch from cache must remain uncorrupted
+        res2 = fetch_github_stats("mutation_tester")
+        assert "MALICIOUS_INPUT" not in res2["languages"]
+        assert res2["total_repos"] == 2
+
+    def test_username_input_sanitization(self):
+        """Test invalid or non-string usernames reject safely without network calls."""
+        fetch_github_stats.cache_clear()
+
+        with patch("requests.get") as mock_get:
+            # Non-string input
+            assert fetch_github_stats(12345)["total_repos"] == 0
+            # Invalid characters
+            assert fetch_github_stats("invalid/user$name")["total_repos"] == 0
+            # None / Empty
+            assert fetch_github_stats("")["total_repos"] == 0
+            assert fetch_github_stats(None)["total_repos"] == 0
+            mock_get.assert_not_called()
+
 
 class TestLeetCodeFetcher:
     """Tests for LeetCode GraphQL integration."""
@@ -139,3 +192,41 @@ class TestLeetCodeFetcher:
             assert stats["problems_solved"] == 0
             assert stats["easy_solved"] == 0
             assert stats["contest_rating"] == 0.0
+
+    def test_failed_requests_do_not_pollute_cache(self):
+        """Test that HTTP 429 or 500 does NOT get cached, allowing retry to succeed."""
+        fetch_leetcode_stats.cache_clear()
+
+        mock_429 = MagicMock(status_code=429)
+
+        # 1. First call fails with rate limit 429
+        with patch("requests.post", return_value=mock_429):
+            res_fail = fetch_leetcode_stats("bob_rate_limited")
+            assert res_fail["problems_solved"] == 0
+
+        # 2. Second call succeeds immediately because 429 was NOT cached
+        mock_ok_profile = MagicMock(
+            status_code=200,
+            json=lambda: {
+                "data": {
+                    "matchedUser": {
+                        "submitStats": {"acSubmissionNum": [{"difficulty": "All", "count": 42}]}
+                    }
+                }
+            },
+        )
+        mock_ok_contest = MagicMock(status_code=200, json=lambda: {"data": {}})
+
+        with patch("requests.post", side_effect=[mock_ok_profile, mock_ok_contest]):
+            res_ok = fetch_leetcode_stats("bob_rate_limited")
+            assert res_ok["problems_solved"] == 42
+
+    def test_leetcode_input_sanitization(self):
+        """Test non-string or invalid LeetCode usernames reject safely without network calls."""
+        fetch_leetcode_stats.cache_clear()
+
+        with patch("requests.post") as mock_post:
+            assert fetch_leetcode_stats(99999)["problems_solved"] == 0
+            assert fetch_leetcode_stats("bad@name!")["problems_solved"] == 0
+            assert fetch_leetcode_stats("")["problems_solved"] == 0
+            mock_post.assert_not_called()

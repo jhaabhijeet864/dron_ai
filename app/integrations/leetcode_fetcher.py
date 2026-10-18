@@ -14,10 +14,13 @@ These queries are based on reverse-engineered community implementations
 (alfa-leetcode-api, leetcode-query).
 """
 
+import copy
 import time
 import threading
 import requests
 import logging
+
+from app.utils.sanitizer import sanitize_username
 
 logger = logging.getLogger(__name__)
 
@@ -39,19 +42,22 @@ def _cache_get(key: str):
         if expires_at < now:
             _cache.pop(key, None)
             return None
-        return value
+        return copy.deepcopy(value)
 
 
 def _cache_set(key: str, value: dict) -> None:
     with _cache_lock:
-        if len(_cache) >= _CACHE_MAXSIZE:
+        if key in _cache:
+            _cache.pop(key)
+        elif len(_cache) >= _CACHE_MAXSIZE:
             _cache.pop(next(iter(_cache)))
-        _cache[key] = (time.monotonic() + _CACHE_TTL_SECONDS, value)
+        _cache[key] = (time.monotonic() + _CACHE_TTL_SECONDS, copy.deepcopy(value))
 
 
 def _cache_clear() -> None:
     with _cache_lock:
         _cache.clear()
+
 
 # GraphQL query to fetch user profile and problem stats
 USER_PROFILE_QUERY = """
@@ -86,8 +92,6 @@ query userContestRankingInfo($username: String!) {
 """
 
 
-# shortcut: TTL helper duplicated from github_fetcher (stdlib only, no
-# new dep). Extract to app/integrations/_ttl_cache.py if a third user appears.
 def fetch_leetcode_stats(username: str) -> dict:
     """
     Fetch public LeetCode statistics for a given username.
@@ -119,26 +123,25 @@ def fetch_leetcode_stats(username: str) -> dict:
         "ranking": 0,
     }
 
-    if not username:
+    if not username or not isinstance(username, str):
         return result
 
     try:
-        from app.utils.sanitizer import sanitize_username
-
-        username = sanitize_username(username)
-    except ValueError:
+        clean_user = sanitize_username(username)
+    except (ValueError, TypeError, AttributeError):
         logger.warning(f"Rejected invalid LeetCode username: {username}")
         return result
-    if not username:
+    if not clean_user:
         return result
 
-    cached = _cache_get(username)
+    cache_key = clean_user.lower()
+    cached = _cache_get(cache_key)
     if cached is not None:
         return cached
 
-    result, cacheable = _fetch_leetcode_stats_uncached(username)
+    result, cacheable = _fetch_leetcode_stats_uncached(clean_user)
     if cacheable:
-        _cache_set(username, result)
+        _cache_set(cache_key, result)
     return result
 
 
@@ -155,49 +158,53 @@ def _fetch_leetcode_stats_uncached(username: str) -> tuple:
 
     headers = {
         "Content-Type": "application/json",
-        "User-Agent": "Mozilla/5.0",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
     }
 
     try:
-        # 1. Profile Query
+        # 1. Fetch user profile and submission stats
         payload1 = {
             "query": USER_PROFILE_QUERY,
             "variables": {"username": username}
         }
         r1 = requests.post(LEETCODE_GRAPHQL_URL, json=payload1, headers=headers, timeout=10)
-        
-        if r1.status_code == 200:
-            data = r1.json().get("data", {})
-            matched_user = data.get("matchedUser")
-            
-            if matched_user is None:
-                logger.warning(f"LeetCode user not found: {username}")
-                return result, False
-                
-            stats = matched_user.get("submitStats", {}).get("acSubmissionNum", [])
-            for stat in stats:
-                diff = stat.get("difficulty")
-                count = stat.get("count", 0)
-                if diff == "All":
-                    result["problems_solved"] = count
-                elif diff == "Easy":
-                    result["easy_solved"] = count
-                elif diff == "Medium":
-                    result["medium_solved"] = count
-                elif diff == "Hard":
-                    result["hard_solved"] = count
-                    
-        # 2. Contest Query
+
+        # GUARD: Non-200 responses (429 rate limits, 500/503 server errors) must NOT be cached
+        if r1.status_code != 200:
+            logger.warning(f"LeetCode API returned status {r1.status_code} for user: {username}")
+            return result, False
+
+        data = r1.json().get("data", {})
+        matched_user = data.get("matchedUser")
+
+        if matched_user is None:
+            logger.warning(f"LeetCode user not found: {username}")
+            return result, False
+
+        stats = matched_user.get("submitStats", {}).get("acSubmissionNum", [])
+        for stat in stats:
+            diff = stat.get("difficulty")
+            count = stat.get("count", 0)
+            if diff == "All":
+                result["problems_solved"] = count
+            elif diff == "Easy":
+                result["easy_solved"] = count
+            elif diff == "Medium":
+                result["medium_solved"] = count
+            elif diff == "Hard":
+                result["hard_solved"] = count
+
+        # 2. Fetch contest ranking
         payload2 = {
             "query": CONTEST_RATING_QUERY,
             "variables": {"username": username}
         }
         r2 = requests.post(LEETCODE_GRAPHQL_URL, json=payload2, headers=headers, timeout=10)
-        
+
         if r2.status_code == 200:
-            data = r2.json().get("data", {})
-            contest_info = data.get("userContestRanking")
-            
+            contest_data = r2.json().get("data", {})
+            contest_info = contest_data.get("userContestRanking")
+
             if contest_info:
                 result["contest_rating"] = contest_info.get("rating", 0.0)
                 result["ranking"] = contest_info.get("globalRanking", 0)
