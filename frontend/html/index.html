@@ -12,17 +12,38 @@
     <!-- Font Awesome 6 Icons via CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Main Stylesheet -->
-    <link rel="stylesheet" href="../css/styles.css">
-</head>
-<body class="landing-page-body">
+    <link rel="stylesheet" href="../css/styles.css?v=2">
+    <style>
+        /* Force clean solid background and eliminate all green glow/grid/glitter artifacts */
+        html,
+        body,
+        body.landing-page-body,
+        .landing-main-content,
+        .landing-hero-section,
+        .hero-container {
+            background: #FFFFFF !important;
+            background-color: #FFFFFF !important;
+            background-image: none !important;
+        }
 
-    <!-- Background Ambient Luxury Gold Glows -->
-    <div class="landing-ambient-bg">
-        <div class="ambient-glow ambient-glow-top"></div>
-        <div class="ambient-glow ambient-glow-center"></div>
-        <div class="ambient-glow ambient-glow-bottom"></div>
-        <div class="gold-grid-overlay"></div>
-    </div>
+        .landing-ambient-bg,
+        .ambient-glow,
+        .ambient-glow-top,
+        .ambient-glow-center,
+        .ambient-glow-bottom,
+        .gold-grid-overlay,
+        .card-glow-layer {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+            background: none !important;
+            background-image: none !important;
+        }
+    </style>
+</head>
+<body class="landing-page-body" style="background: #FFFFFF !important; background-image: none !important;">
+
 
     <!-- ═══════════════════════════════════════════════════════════════
          1. Header & Minimalist Navigation Bar
@@ -40,32 +61,31 @@
                 </div>
             </a>
 
-            <!-- Minimalist Navigation Links -->
-            <nav class="landing-nav" aria-label="Main Navigation">
-                <a href="dashboard.html" class="landing-nav-link">
-                    <i class="fa-solid fa-chart-pie"></i>
-                    <span>Mentorship Hub</span>
-                </a>
-                <a href="interview.html" class="landing-nav-link">
-                    <i class="fa-solid fa-user-tie"></i>
-                    <span>Interview Hub</span>
-                </a>
-                <a href="softskills.html" class="landing-nav-link">
-                    <i class="fa-solid fa-comments"></i>
-                    <span>Soft Skills</span>
-                </a>
-                <a href="input.html" class="landing-nav-link">
-                    <i class="fa-solid fa-sliders"></i>
-                    <span>Student Data</span>
-                </a>
-            </nav>
-
-            <!-- Right Utilities & Status -->
-            <div class="landing-header-actions">
-                <div class="engine-live-pill checking" id="system-status-pill" title="Checking AI Engine &amp; Backend status...">
-                    <span class="status-indicator-dot" id="system-status-dot"></span>
-                    <span class="status-indicator-text" id="system-status-text">CHECKING...</span>
-                </div>
+            <!-- Right Header Utilities & Navigation -->
+            <div class="landing-header-right">
+                <!-- Minimalist Navigation Links -->
+                <nav class="landing-nav" aria-label="Main Navigation">
+                    <a href="dashboard.html" class="landing-nav-link">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="interview.html" class="landing-nav-link">
+                        <i class="fa-solid fa-user-tie"></i>
+                        <span>Interview</span>
+                    </a>
+                    <a href="softskills.html" class="landing-nav-link">
+                        <i class="fa-solid fa-comments"></i>
+                        <span>Soft Skills</span>
+                    </a>
+                    <a href="input.html" class="landing-nav-link">
+                        <i class="fa-regular fa-id-card"></i>
+                        <span>Profile</span>
+                    </a>
+                    <div class="engine-live-pill checking" id="system-status-pill" title="Checking AI Engine &amp; Backend status...">
+                        <span class="status-indicator-dot" id="system-status-dot"></span>
+                        <span class="status-indicator-text" id="system-status-text">CHECKING...</span>
+                    </div>
+                </nav>
             </div>
         </div>
     </header>
@@ -174,7 +194,6 @@
 
                     <!-- Card 1: Academic Prediction -->
                     <a href="academic.html" class="engine-card fade-in-element" id="card-academic" style="--stagger: 0.75s;">
-                        <div class="card-glow-layer"></div>
                         <div class="card-border-frame"></div>
                         <div class="card-inner-content">
                             <div class="card-top-row">
@@ -205,7 +224,6 @@
 
                     <!-- Card 2: Career Recommendation -->
                     <a href="career.html" class="engine-card fade-in-element" id="card-career" style="--stagger: 0.85s;">
-                        <div class="card-glow-layer"></div>
                         <div class="card-border-frame"></div>
                         <div class="card-inner-content">
                             <div class="card-top-row">
@@ -236,7 +254,6 @@
 
                     <!-- Card 3: Placement Readiness -->
                     <a href="placement.html" class="engine-card fade-in-element" id="card-placement" style="--stagger: 0.95s;">
-                        <div class="card-glow-layer"></div>
                         <div class="card-border-frame"></div>
                         <div class="card-inner-content">
                             <div class="card-top-row">
@@ -267,7 +284,6 @@
 
                     <!-- Card 4: Personalized Roadmap -->
                     <a href="roadmap.html" class="engine-card fade-in-element" id="card-roadmap" style="--stagger: 1.05s;">
-                        <div class="card-glow-layer"></div>
                         <div class="card-border-frame"></div>
                         <div class="card-inner-content">
                             <div class="card-top-row">
@@ -298,7 +314,6 @@
 
                     <!-- Card 5: Interview Prep & Question Hub -->
                     <a href="interview.html" class="engine-card fade-in-element" id="card-interview" style="--stagger: 1.15s;">
-                        <div class="card-glow-layer"></div>
                         <div class="card-border-frame"></div>
                         <div class="card-inner-content">
                             <div class="card-top-row">
@@ -359,20 +374,7 @@
 
     </main>
 
-    <!-- ═══════════════════════════════════════════════════════════════
-         Landing Footer
-         ═══════════════════════════════════════════════════════════════ -->
-    <footer class="landing-footer">
-        <div class="footer-inner">
-            <div class="footer-left">
-                <span class="footer-brand">DRON <span class="brand-gold">AI</span></span>
-                <span class="footer-tagline">Intelligent Student Future &amp; Career Guidance System</span>
-            </div>
-            <div class="footer-center">
-                <span class="footer-copy">3rd-Year Engineering Capstone &bull; Built with Flask &amp; Vanilla Web Technologies</span>
-            </div>
-        </div>
-    </footer>
+
 
     <!-- Client-Side Animation & State Engine -->
     <script src="../js/app.js"></script>
