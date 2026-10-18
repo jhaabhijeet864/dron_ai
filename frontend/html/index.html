@@ -3,378 +3,1189 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Dron AI: Intelligent Student Future & Career Guidance System — Landing Dashboard">
-    <title>Dron AI — Intelligent Student Career & Future Guidance System</title>
-    <!-- Google Fonts: Inter & Montserrat -->
+    <meta name="description" content="Dron AI: AI-Powered Student Career Platform — Predictive Career Intelligence & Roadmaps">
+    <title>Dron AI — Career Intelligence</title>
+    <!-- Google Fonts: Inter & Caveat -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <!-- Font Awesome 6 Icons via CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Main Stylesheet -->
     <link rel="stylesheet" href="../css/styles.css?v=2">
+    
     <style>
-        /* Force clean solid background and eliminate all green glow/grid/glitter artifacts */
-        html,
-        body,
-        body.landing-page-body,
-        .landing-main-content,
-        .landing-hero-section,
-        .hero-container {
-            background: #FFFFFF !important;
-            background-color: #FFFFFF !important;
-            background-image: none !important;
+        /* ═══════════════════════════════════════════════════════════════
+           Dron AI Clean Modern Fluid Widescreen Design System
+           ═══════════════════════════════════════════════════════════════ */
+        :root {
+            --brand-green: #16A34A;
+            --brand-green-dark: #15803D;
+            --brand-green-light: #ECFDF5;
+            --brand-green-border: #A7F3D0;
+            --text-dark: #0F172A;
+            --text-muted: #64748B;
+            --text-secondary: #334155;
+            --bg-page: #FFFFFF;
+            --bg-card: #FFFFFF;
+            --border-card: #E5E7EB;
+            --border-subtle: #F1F5F9;
         }
 
-        .landing-ambient-bg,
-        .ambient-glow,
-        .ambient-glow-top,
-        .ambient-glow-center,
-        .ambient-glow-bottom,
-        .gold-grid-overlay,
-        .card-glow-layer {
-            display: none !important;
-            opacity: 0 !important;
-            visibility: hidden !important;
-            pointer-events: none !important;
-            background: none !important;
-            background-image: none !important;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body.dron-landing {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-page) !important;
+            background: var(--bg-page) !important;
+            color: var(--text-dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            width: 100%;
+        }
+
+        /* Ambient soft green gradient background accents */
+        .ambient-blob-left {
+            position: absolute;
+            top: 0;
+            left: -150px;
+            width: 550px;
+            height: 650px;
+            background: radial-gradient(circle, rgba(22, 163, 74, 0.05) 0%, rgba(255, 255, 255, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .ambient-blob-right {
+            position: absolute;
+            top: 80px;
+            right: -100px;
+            width: 750px;
+            height: 750px;
+            background: radial-gradient(circle, rgba(34, 197, 94, 0.06) 0%, rgba(255, 255, 255, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Fluid Widescreen Container */
+        .landing-wrap {
+            max-width: 1680px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 clamp(1.5rem, 3.8vw, 4.5rem);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── Top Navigation Bar (Fluid Widescreen) ── */
+        .dron-navbar {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(229, 231, 235, 0.7);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-inner {
+            max-width: 1680px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 1.1rem clamp(1.5rem, 3.8vw, 4.5rem);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            text-decoration: none;
+        }
+
+        .brand-logo-sq {
+            width: 42px;
+            height: 42px;
+            background: var(--brand-green);
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
+            transition: transform 0.2s ease;
+        }
+
+        .navbar-brand:hover .brand-logo-sq {
+            transform: scale(1.05);
+        }
+
+        .brand-text-col {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.15;
+        }
+
+        .brand-title {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            letter-spacing: -0.02em;
+        }
+
+        .brand-sub {
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        /* Scoped Landing Navbar Links (Free from global sidebar class collision) */
+        .dron-nav-list {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Explicit resets overriding global styles.css .nav-item rules */
+        .dron-navbar .dron-nav-item,
+        .dron-navbar .dron-nav-item.active,
+        .dron-navbar .nav-item,
+        .dron-navbar .nav-item.active {
+            position: relative;
+            background: transparent !important;
+            border: none !important;
+            border-left: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+            transform: none !important;
+            display: block !important;
+        }
+
+        .dron-nav-link {
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+            padding: 0 0 6px 0;
+            display: inline-block;
+            outline: none !important;
+            border: none !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            line-height: 1.2;
+        }
+
+        .dron-nav-link:focus,
+        .dron-nav-link:active {
+            outline: none !important;
+            box-shadow: none !important;
+            border: none !important;
+            background: transparent !important;
+        }
+
+        .dron-nav-link:focus-visible {
+            outline: 2px solid var(--brand-green) !important;
+            outline-offset: 3px !important;
+            border-radius: 4px;
+        }
+
+        .dron-nav-link:hover {
+            color: var(--brand-green);
+            background: transparent !important;
+        }
+
+        .dron-nav-item.active .dron-nav-link {
+            color: var(--text-dark);
+            font-weight: 600;
+            background: transparent !important;
+        }
+
+        /* Clean green underline indicator matching mockup */
+        .dron-nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 100%;
+            height: 2.5px;
+            background: var(--brand-green);
+            border-radius: 2px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1.15rem;
+        }
+
+        .theme-toggle-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 1.15rem;
+            transition: all 0.2s ease;
+        }
+
+        .theme-toggle-btn:focus-visible {
+            outline: 2px solid var(--brand-green);
+            outline-offset: 2px;
+        }
+
+        .theme-toggle-btn:hover {
+            color: var(--brand-green);
+            background: var(--brand-green-light);
+        }
+
+        .btn-dashboard-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+            background: var(--brand-green);
+            color: #FFFFFF;
+            padding: 0.65rem 1.45rem;
+            border-radius: 9px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(22, 163, 74, 0.2);
+        }
+
+        .btn-dashboard-pill:focus-visible {
+            outline: 2px solid var(--brand-green);
+            outline-offset: 3px;
+        }
+
+        .btn-dashboard-pill:hover {
+            background: var(--brand-green-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(22, 163, 74, 0.3);
+            color: #FFFFFF;
+        }
+
+        /* ── Hero Section (Fluid Widescreen) ── */
+        .hero-section {
+            padding: clamp(3rem, 5vw, 5rem) 0 clamp(2.5rem, 4vw, 4rem);
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 1.1fr;
+            gap: clamp(2.5rem, 5vw, 5.5rem);
+            align-items: center;
+        }
+
+        .hero-left {
+            max-width: 680px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+            background: var(--brand-green-light);
+            border: 1px solid var(--brand-green-border);
+            color: var(--brand-green-dark);
+            font-size: 0.76rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            padding: 0.4rem 0.95rem;
+            border-radius: 9999px;
+            margin-bottom: 1.75rem;
+        }
+
+        .badge-dot {
+            width: 7px;
+            height: 7px;
+            background: var(--brand-green);
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .hero-heading {
+            font-size: clamp(2.6rem, 4.3vw, 4.3rem);
+            font-weight: 800;
+            line-height: 1.14;
+            letter-spacing: -0.035em;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-highlight {
+            color: var(--brand-green);
+        }
+
+        .hero-desc {
+            font-size: clamp(1.05rem, 1.25vw, 1.22rem);
+            line-height: 1.7;
+            color: var(--text-muted);
+            margin-bottom: 2.25rem;
+            max-width: 580px;
+        }
+
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-hero-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: var(--brand-green-dark);
+            color: #FFFFFF;
+            padding: 0.85rem 1.85rem;
+            border-radius: 9px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 14px rgba(21, 128, 61, 0.28);
+        }
+
+        .btn-hero-primary:hover {
+            background: #166534;
+            transform: translateY(-2px);
+            color: #FFFFFF;
+            box-shadow: 0 6px 18px rgba(21, 128, 61, 0.38);
+        }
+
+        .btn-hero-secondary {
+            display: inline-flex;
+            align-items: center;
+            background: #FFFFFF;
+            color: var(--text-secondary);
+            border: 1px solid #CBD5E1;
+            padding: 0.85rem 1.85rem;
+            border-radius: 9px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-hero-secondary:hover {
+            border-color: #94A3B8;
+            background: #F8FAFC;
+            color: var(--text-dark);
+        }
+
+        /* ── Hero Right: Mountain Journey Card (Fluid Scale) ── */
+        .journey-card {
+            background: #FFFFFF;
+            border: 1px solid rgba(22, 163, 74, 0.16);
+            border-radius: 32px;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            aspect-ratio: 1.42 / 1;
+            min-height: 420px;
+            box-shadow: 0 12px 35px -10px rgba(0, 0, 0, 0.04), 0 24px 50px -20px rgba(22, 163, 74, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* SVG Landscape Layering */
+        .journey-card-svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* Handwritten annotation */
+        .handwriting-note {
+            position: absolute;
+            top: clamp(20px, 3.5vw, 36px);
+            right: clamp(70px, 12vw, 130px);
+            font-family: 'Caveat', cursive;
+            font-size: clamp(1.6rem, 2.3vw, 2.1rem);
+            font-weight: 700;
+            color: #15803D;
+            line-height: 1.05;
+            transform: rotate(-6deg);
+            z-index: 10;
+            pointer-events: none;
+            text-align: center;
+        }
+
+        /* Milestone nodes overlaid on card */
+        .milestone-node {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            padding: 0.4rem 0.85rem 0.4rem 0.4rem;
+            border-radius: 32px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .milestone-node:hover {
+            transform: translateY(-2px);
+            background: #FFFFFF;
+            box-shadow: 0 6px 18px rgba(22, 163, 74, 0.15);
+        }
+
+        .node-icon-circle {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #DCFCE7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--brand-green);
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(22, 163, 74, 0.18);
+        }
+
+        .node-texts {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+
+        .node-title {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            white-space: nowrap;
+        }
+
+        .node-sub {
+            font-size: 0.74rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        /* Milestone Node Coordinates */
+        .node-profile {
+            top: 24%;
+            left: 5%;
+        }
+
+        .node-analysis {
+            top: 46%;
+            left: 23%;
+        }
+
+        .node-career {
+            top: 58%;
+            left: 50%;
+        }
+
+        .node-roadmap {
+            top: 68%;
+            right: 6%;
+        }
+
+        @media (max-width: 640px) {
+            .milestone-node {
+                max-width: 125px;
+                padding: 0.3rem 0.5rem 0.3rem 0.35rem;
+                gap: 0.45rem;
+            }
+            .node-icon-circle {
+                width: 32px;
+                height: 32px;
+                font-size: 0.85rem;
+            }
+            .node-title,
+            .node-sub {
+                white-space: normal;
+                word-break: break-word;
+            }
+            .node-title {
+                font-size: 0.74rem;
+            }
+            .node-sub {
+                font-size: 0.65rem;
+            }
+        }
+
+        /* ── Feature Cards Row (5 Cards across Widescreen) ── */
+        .features-section {
+            padding: 3rem 0 4.5rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: clamp(1rem, 1.6vw, 1.75rem);
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid #E5E7EB;
+            border-radius: 20px;
+            padding: 1.6rem 1.45rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 220px;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: #CBD5E1;
+            box-shadow: 0 14px 28px -6px rgba(0, 0, 0, 0.06);
+        }
+
+        .feature-top {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .feature-icon-box {
+            width: 46px;
+            height: 46px;
+            border-radius: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            margin-bottom: 1.2rem;
+        }
+
+        /* Card color themes */
+        .theme-academic .feature-icon-box { background: #DCFCE7; color: #16A34A; }
+        .theme-academic .feature-arrow { background: #DCFCE7; color: #16A34A; }
+
+        .theme-career .feature-icon-box { background: #DBEAFE; color: #2563EB; }
+        .theme-career .feature-arrow { background: #DBEAFE; color: #2563EB; }
+
+        .theme-placement .feature-icon-box { background: #F3E8FF; color: #9333EA; }
+        .theme-placement .feature-arrow { background: #F3E8FF; color: #9333EA; }
+
+        .theme-roadmap .feature-icon-box { background: #FEF3C7; color: #D97706; }
+        .theme-roadmap .feature-arrow { background: #FEF3C7; color: #D97706; }
+
+        .theme-interview .feature-icon-box { background: #FEE2E2; color: #E11D48; }
+        .theme-interview .feature-arrow { background: #FEE2E2; color: #E11D48; }
+
+        .feature-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .feature-desc {
+            font-size: 0.82rem;
+            line-height: 1.55;
+            color: var(--text-muted);
+            margin-bottom: 1.2rem;
+        }
+
+        .feature-bottom {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: auto;
+        }
+
+        .feature-arrow {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.82rem;
+            transition: transform 0.2s ease;
+        }
+
+        .feature-card:hover .feature-arrow {
+            transform: translateX(4px);
+        }
+
+        /* ── About Section ("Why Dron AI?" / "Our Objective") ── */
+        .about-section {
+            padding: 3.5rem 0 6.5rem;
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.95fr;
+            gap: clamp(2.5rem, 5vw, 5.5rem);
+            align-items: start;
+        }
+
+        .about-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .about-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+            background: var(--brand-green-light);
+            border: 1px solid var(--brand-green-border);
+            color: var(--brand-green-dark);
+            font-size: 0.74rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            padding: 0.35rem 0.9rem;
+            border-radius: 9999px;
+            margin-bottom: 1.35rem;
+            width: fit-content;
+        }
+
+        .about-title {
+            font-size: clamp(2.2rem, 3.4vw, 2.75rem);
+            font-weight: 800;
+            color: var(--text-dark);
+            letter-spacing: -0.025em;
+            margin-bottom: 1.25rem;
+        }
+
+        .about-desc {
+            font-size: 1.05rem;
+            line-height: 1.75;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            max-width: 680px;
+        }
+
+        .about-benefits-row {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            flex-wrap: wrap;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+            font-weight: 600;
+        }
+
+        .benefit-icon {
+            color: var(--brand-green);
+            font-size: 1.25rem;
+        }
+
+        /* Objective Card */
+        .objective-card {
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 26px;
+            padding: clamp(2rem, 3.5vw, 2.75rem);
+        }
+
+        .objective-heading {
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.015em;
+        }
+
+        .objective-lead {
+            font-size: 0.95rem;
+            line-height: 1.65;
+            color: var(--text-muted);
+            margin-bottom: 1.75rem;
+        }
+
+        .objective-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .objective-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.85rem;
+            font-size: 0.92rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .objective-check {
+            color: var(--brand-green);
+            font-size: 1.15rem;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        /* Status Pill Navbar adaptation */
+        .engine-live-pill {
+            height: 34px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0 0.9rem;
+            border-radius: 20px;
+            background: #ECFDF5;
+            border: 1px solid #86EFAC;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #16A34A;
+            letter-spacing: 0.05em;
+        }
+
+        /* ── Responsive Adaptations ── */
+        @media (max-width: 1100px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+            .hero-left {
+                max-width: 100%;
+                text-align: center;
+            }
+            .hero-actions {
+                justify-content: center;
+            }
+            .hero-desc {
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .features-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .about-grid {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar-inner {
+                flex-wrap: wrap;
+                gap: 0.85rem 1rem;
+                padding: 1rem 1.25rem;
+            }
+            .dron-nav-list {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 1.25rem;
+                width: 100%;
+                order: 3;
+                justify-content: center;
+                padding-top: 0.5rem;
+                border-top: 1px solid var(--border-subtle, #F1F5F9);
+            }
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .about-benefits-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1.25rem;
+            }
+            .objective-card {
+                padding: 1.75rem;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
-<body class="landing-page-body" style="background: #FFFFFF !important; background-image: none !important;">
+<body class="dron-landing">
 
+    <!-- Ambient background soft tints -->
+    <div class="ambient-blob-left" aria-hidden="true"></div>
+    <div class="ambient-blob-right" aria-hidden="true"></div>
 
     <!-- ═══════════════════════════════════════════════════════════════
-         1. Header & Minimalist Navigation Bar
+         Top Navigation Bar
          ═══════════════════════════════════════════════════════════════ -->
-    <header class="landing-header" id="landing-header">
-        <div class="header-inner">
-            <!-- Brand Logo with Gold Accent -->
-            <a href="index.html" class="landing-brand">
-                <div class="brand-gold-symbol">
+    <header class="dron-navbar">
+        <div class="navbar-inner">
+            <!-- Brand Logo -->
+            <a href="index.html" class="navbar-brand">
+                <div class="brand-logo-sq">
                     <i class="fa-solid fa-brain"></i>
                 </div>
-                <div class="brand-title-wrap">
-                    <span class="brand-name-gold">DRON <span class="brand-ai-text">AI</span></span>
-                    <span class="brand-badge-mini">INTELLIGENCE</span>
+                <div class="brand-text-col">
+                    <span class="brand-title">Dron AI</span>
+                    <span class="brand-sub">Career Intelligence</span>
                 </div>
             </a>
 
-            <!-- Right Header Utilities & Navigation -->
-            <div class="landing-header-right">
-                <!-- Minimalist Navigation Links -->
-                <nav class="landing-nav" aria-label="Main Navigation">
-                    <a href="dashboard.html" class="landing-nav-link">
-                        <i class="fa-solid fa-chart-line"></i>
-                        <span>Dashboard</span>
-                    </a>
-                    <a href="interview.html" class="landing-nav-link">
-                        <i class="fa-solid fa-user-tie"></i>
-                        <span>Interview</span>
-                    </a>
-                    <a href="softskills.html" class="landing-nav-link">
-                        <i class="fa-solid fa-comments"></i>
-                        <span>Soft Skills</span>
-                    </a>
-                    <a href="input.html" class="landing-nav-link">
-                        <i class="fa-regular fa-id-card"></i>
-                        <span>Profile</span>
-                    </a>
-                    <div class="engine-live-pill checking" id="system-status-pill" title="Checking AI Engine &amp; Backend status...">
-                        <span class="status-indicator-dot" id="system-status-dot"></span>
-                        <span class="status-indicator-text" id="system-status-text">CHECKING...</span>
-                    </div>
-                </nav>
+            <!-- Center Navigation Links -->
+            <ul class="dron-nav-list">
+                <li class="dron-nav-item active">
+                    <a href="index.html" class="dron-nav-link">Home</a>
+                </li>
+                <li class="dron-nav-item">
+                    <a href="#features" class="dron-nav-link">Features</a>
+                </li>
+                <li class="dron-nav-item">
+                    <a href="#how-it-works" class="dron-nav-link">How It Works</a>
+                </li>
+                <li class="dron-nav-item">
+                    <a href="#about" class="dron-nav-link">About</a>
+                </li>
+            </ul>
+
+            <!-- Right Controls: Status Pill + Sun Toggle + Dashboard Button -->
+            <div class="navbar-right">
+                <!-- System Health Status Pill (Monitored by app.js) -->
+                <div class="engine-live-pill checking" id="system-status-pill" title="Checking AI Engine &amp; Backend status...">
+                    <span class="status-indicator-dot" id="system-status-dot"></span>
+                    <span class="status-indicator-text" id="system-status-text">CHECKING...</span>
+                </div>
+
+                <!-- Theme / Brightness Icon -->
+                <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle theme">
+                    <i class="fa-regular fa-sun"></i>
+                </button>
+
+                <!-- Action Button -->
+                <a href="dashboard.html" class="btn-dashboard-pill">
+                    <span>Go to Dashboard</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
             </div>
         </div>
     </header>
 
     <!-- ═══════════════════════════════════════════════════════════════
-         Main Content Area
+         Main Landing Page Content (Fluid Widescreen)
          ═══════════════════════════════════════════════════════════════ -->
-    <main class="landing-main-content">
+    <main class="landing-wrap">
 
-        <!-- ═══════════════════════════════════════════════════════════
-             2. Hero Section: Philosophy Quote & Dynamic Subtitle
-             ═══════════════════════════════════════════════════════════ -->
-        <section class="landing-hero-section" id="hero">
-            <div class="hero-container">
+        <!-- 1. Hero Section -->
+        <section class="hero-section">
+            <div class="hero-grid">
                 
-                <!-- AI Engineering Tag -->
-                <div class="hero-eyebrow-badge fade-in-element" style="--stagger: 0.1s;">
-                    <span class="status-indicator-dot" style="width: 7px; height: 7px; background: #16A34A; box-shadow: 0 0 8px #22C55E;"></span>
-                    <span>AI-POWERED STUDENT CAREER &amp; PLACEMENT INTELLIGENCE</span>
-                </div>
+                <!-- Hero Left: Text & CTAs -->
+                <div class="hero-left">
+                    <div class="hero-badge">
+                        <span class="badge-dot"></span>
+                        <span>AI-Powered Student Career Platform</span>
+                    </div>
 
-                <!-- Core Headline -->
-                <div class="hero-quote-wrapper fade-in-element" style="--stagger: 0.2s;">
-                    <h1 class="hero-quote-text">
-                        <span class="quote-phrase phrase-1">From Campus to Career,</span>
-                        <span class="quote-phrase phrase-2">Powered by Predictive Intelligence.</span>
+                    <h1 class="hero-heading">
+                        Turn Your College<br>
+                        Journey into a Clear<br>
+                        <span class="hero-highlight">Career Path.</span>
                     </h1>
+
+                    <p class="hero-desc">
+                        Dron AI analyzes your academic performance, skills and interests to provide personalized career insights, placement predictions and actionable roadmaps.
+                    </p>
+
+                    <div class="hero-actions">
+                        <a href="#features" class="btn-hero-primary">
+                            <span>Explore Features</span>
+                            <i class="fa-solid fa-arrow-down"></i>
+                        </a>
+                        <a href="#about" class="btn-hero-secondary">
+                            <span>Learn More</span>
+                        </a>
+                    </div>
                 </div>
 
-                <!-- Descriptive Subtitle -->
-                <p class="hero-subtitle-text fade-in-element" id="hero-subtitle" style="--stagger: 0.3s;">
-                    <span>Know where you stand, predict placement probability, and execute actionable milestone roadmaps.</span>
-                </p>
+                <!-- Hero Right: Mountain Journey Card -->
+                <div class="journey-card" id="how-it-works">
+                    
+                    <!-- SVG Mountain Graphic with Milestone Path & Summit Flag -->
+                    <svg class="journey-card-svg" viewBox="0 0 650 440" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                        <defs>
+                            <!-- Background mountain gradient -->
+                            <linearGradient id="mtnBackGrad" x1="450" y1="120" x2="650" y2="440" gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stop-color="#E2F7E9" stop-opacity="0.8"/>
+                                <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.2"/>
+                            </linearGradient>
+                            <!-- Foreground mountain gradient -->
+                            <linearGradient id="mtnFrontGrad" x1="400" y1="80" x2="650" y2="440" gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stop-color="#A7F3D0" stop-opacity="0.55"/>
+                                <stop offset="40%" stop-color="#D1FAE5" stop-opacity="0.45"/>
+                                <stop offset="100%" stop-color="#F0FDF4" stop-opacity="0.1"/>
+                            </linearGradient>
+                        </defs>
 
-                <!-- Hero Action Buttons -->
-                <div class="hero-cta-actions fade-in-element" style="--stagger: 0.4s;">
-                    <a href="dashboard.html" class="hero-cta-primary">
-                        <i class="fa-solid fa-chart-line"></i>
-                        <span>Explore Student Dashboard</span>
-                        <i class="fa-solid fa-arrow-right"></i>
-                    </a>
-                </div>
+                        <!-- Background rolling hills -->
+                        <path d="M 0 440 L 0 340 C 130 320, 260 290, 390 220 C 470 170, 540 140, 650 170 L 650 440 Z" fill="url(#mtnBackGrad)"/>
 
-                <!-- Modern Feature Stat Cards (Replacing the old box) -->
-                <div class="hero-capabilities-grid fade-in-element" style="--stagger: 0.5s;">
-                    <div class="hero-cap-card">
-                        <div class="cap-card-icon">
-                            <i class="fa-solid fa-dna"></i>
+                        <!-- Primary Mountain Slope culminating at summit (580, 80) -->
+                        <path d="M 120 440 C 240 400, 350 350, 440 270 C 500 220, 550 140, 580 80 C 595 130, 615 230, 650 270 L 650 440 Z" fill="url(#mtnFrontGrad)"/>
+
+                        <!-- Mountain Summit Flagpole & Flag at (580, 80) -->
+                        <line x1="580" y1="80" x2="580" y2="52" stroke="#15803D" stroke-width="2.4" stroke-linecap="round"/>
+                        <path d="M 580 52 Q 593 47, 606 55 L 606 66 Q 593 59, 580 67 Z" fill="#15803D"/>
+
+                        <!-- Milestone Connected Dashed Path -->
+                        <path d="M 95 155 C 145 200, 190 220, 240 235 C 300 255, 380 270, 445 275 C 510 280, 550 300, 575 320" 
+                              stroke="#86EFAC" stroke-width="2.5" stroke-dasharray="6 6" fill="none"/>
+
+                        <!-- Sketched Curved Arrow to the Summit Flag -->
+                        <path d="M 500 70 C 512 85, 520 95, 532 92 C 545 90, 555 80, 570 70" 
+                              stroke="#15803D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                        <!-- Arrowhead -->
+                        <path d="M 562 67 L 573 69 L 568 79" stroke="#15803D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    </svg>
+
+                    <!-- Handwritten Cursive Annotation: "From College To Career" -->
+                    <div class="handwriting-note">
+                        From College<br>To Career
+                    </div>
+
+                    <!-- Milestone 1: Your Profile -->
+                    <div class="milestone-node node-profile">
+                        <div class="node-icon-circle">
+                            <i class="fa-solid fa-graduation-cap"></i>
                         </div>
-                        <div class="cap-card-info">
-                            <span class="cap-card-title">13D Vectors</span>
-                            <span class="cap-card-desc">Academic &amp; Skill Profiling</span>
+                        <div class="node-texts">
+                            <span class="node-title">Your Profile</span>
+                            <span class="node-sub">Academic &amp; Skills</span>
                         </div>
                     </div>
-                    <div class="hero-cap-card">
-                        <div class="cap-card-icon">
-                            <i class="fa-solid fa-bolt"></i>
+
+                    <!-- Milestone 2: AI Analysis -->
+                    <div class="milestone-node node-analysis">
+                        <div class="node-icon-circle">
+                            <i class="fa-solid fa-chart-simple"></i>
                         </div>
-                        <div class="cap-card-info">
-                            <span class="cap-card-title">&lt; 2ms Latency</span>
-                            <span class="cap-card-desc">Real-Time Inference</span>
-                        </div>
-                    </div>
-                    <div class="hero-cap-card">
-                        <div class="cap-card-icon">
-                            <i class="fa-solid fa-chart-pie"></i>
-                        </div>
-                        <div class="cap-card-info">
-                            <span class="cap-card-title">XGBoost ML</span>
-                            <span class="cap-card-desc">Placement Probability</span>
+                        <div class="node-texts">
+                            <span class="node-title">AI Analysis</span>
+                            <span class="node-sub">Predict &amp; Match</span>
                         </div>
                     </div>
-                    <div class="hero-cap-card">
-                        <div class="cap-card-icon">
-                            <i class="fa-solid fa-compass"></i>
+
+                    <!-- Milestone 3: Career Insights -->
+                    <div class="milestone-node node-career">
+                        <div class="node-icon-circle">
+                            <i class="fa-solid fa-bullseye"></i>
                         </div>
-                        <div class="cap-card-info">
-                            <span class="cap-card-title">Cosine Match</span>
-                            <span class="cap-card-desc">Career Role Alignment</span>
+                        <div class="node-texts">
+                            <span class="node-title">Career Insights</span>
+                            <span class="node-sub">Explore Opportunities</span>
                         </div>
                     </div>
+
+                    <!-- Milestone 4: Your Roadmap -->
+                    <div class="milestone-node node-roadmap">
+                        <div class="node-icon-circle">
+                            <i class="fa-solid fa-map"></i>
+                        </div>
+                        <div class="node-texts">
+                            <span class="node-title">Your Roadmap</span>
+                            <span class="node-sub">Learn &amp; Grow</span>
+                        </div>
+                    </div>
+
                 </div>
 
             </div>
         </section>
 
-        <!-- ═══════════════════════════════════════════════════════════
-             3. Main Navigation Grid: 4 Core Modules
-             ═══════════════════════════════════════════════════════════ -->
-        <section class="landing-grid-section" id="engines">
-            <div class="grid-section-container">
+        <!-- 2. Features Row (5 Cards) -->
+        <section class="features-section" id="features">
+            <div class="features-grid">
 
-                <div class="section-heading-wrap fade-in-element" style="--stagger: 0.65s;">
-                    <div class="heading-gold-accent">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i>
-                        <span>INTELLIGENCE MODULES</span>
+                <!-- Feature 1: Academic Prediction -->
+                <a href="academic.html" class="feature-card theme-academic">
+                    <div class="feature-top">
+                        <div class="feature-icon-box">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                        </div>
+                        <h3 class="feature-title">Academic Prediction</h3>
+                        <p class="feature-desc">Forecast your next semester CGPA and understand academic trends.</p>
                     </div>
-                    <h2 class="section-title-text">Core Guidance & Predictive Engines</h2>
-                    <p class="section-subtitle-text">
-                        Select a specialized analytical engine below to inspect quantitative projections, vector alignments, and personalized roadmap sequences.
+                    <div class="feature-bottom">
+                        <div class="feature-arrow">
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Feature 2: Career Recommendations -->
+                <a href="career.html" class="feature-card theme-career">
+                    <div class="feature-top">
+                        <div class="feature-icon-box">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
+                        <h3 class="feature-title">Career Recommendations</h3>
+                        <p class="feature-desc">Get personalized career paths based on your skills, interests and performance.</p>
+                    </div>
+                    <div class="feature-bottom">
+                        <div class="feature-arrow">
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Feature 3: Placement Readiness -->
+                <a href="placement.html" class="feature-card theme-placement">
+                    <div class="feature-top">
+                        <div class="feature-icon-box">
+                            <i class="fa-solid fa-chart-simple"></i>
+                        </div>
+                        <h3 class="feature-title">Placement Readiness</h3>
+                        <p class="feature-desc">Know your placement probability and the key factors that affect it.</p>
+                    </div>
+                    <div class="feature-bottom">
+                        <div class="feature-arrow">
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Feature 4: Personalized Roadmap -->
+                <a href="roadmap.html" class="feature-card theme-roadmap">
+                    <div class="feature-top">
+                        <div class="feature-icon-box">
+                            <i class="fa-solid fa-map"></i>
+                        </div>
+                        <h3 class="feature-title">Personalized Roadmap</h3>
+                        <p class="feature-desc">Identify your skill gaps and follow a step-by-step learning roadmap.</p>
+                    </div>
+                    <div class="feature-bottom">
+                        <div class="feature-arrow">
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Feature 5: Interview Guide -->
+                <a href="mock_interview.html" class="feature-card theme-interview">
+                    <div class="feature-top">
+                        <div class="feature-icon-box">
+                            <i class="fa-solid fa-microphone"></i>
+                        </div>
+                        <h3 class="feature-title">Interview Guide</h3>
+                        <p class="feature-desc">Practice with AI mock interviews and improve your communication skills.</p>
+                    </div>
+                    <div class="feature-bottom">
+                        <div class="feature-arrow">
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+        </section>
+
+        <!-- 3. About Section ("Why Dron AI?" / "Our Objective") -->
+        <section class="about-section" id="about">
+            <div class="about-grid">
+                
+                <!-- Left Column: Why Dron AI? -->
+                <div class="about-left">
+                    <div class="about-badge">
+                        <span class="badge-dot"></span>
+                        <span>About Dron AI</span>
+                    </div>
+
+                    <h2 class="about-title">Why Dron AI?</h2>
+
+                    <p class="about-desc">
+                        Many students face confusion about their career path, lack personalized guidance and are unaware of the skills required for their dream roles. Dron AI bridges this gap by using data-driven insights to help you make informed decisions and prepare effectively for the future.
                     </p>
+
+                    <div class="about-benefits-row">
+                        <div class="benefit-item">
+                            <i class="fa-regular fa-lightbulb benefit-icon"></i>
+                            <span>Clear Career Direction</span>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="fa-solid fa-user-group benefit-icon"></i>
+                            <span>Better Placement Preparation</span>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="fa-solid fa-chart-column benefit-icon"></i>
+                            <span>Data-Driven Decisions</span>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- The 4 Navigation Cards Grid -->
-                <div class="engines-navigation-grid">
+                <!-- Right Column: Our Objective Card -->
+                <div class="objective-card">
+                    <h3 class="objective-heading">Our Objective</h3>
+                    <p class="objective-lead">
+                        To empower every student with personalized career insights, actionable guidance and the tools to build a successful future.
+                    </p>
 
-                    <!-- Card 1: Academic Prediction -->
-                    <a href="academic.html" class="engine-card fade-in-element" id="card-academic" style="--stagger: 0.75s;">
-                        <div class="card-border-frame"></div>
-                        <div class="card-inner-content">
-                            <div class="card-top-row">
-                                <div class="card-icon-emblem">
-                                    <i class="fa-solid fa-chart-line"></i>
-                                </div>
-                                <span class="card-category-tag">PREDICTIVE ANALYTICS</span>
-                            </div>
-                            
-                            <h3 class="card-engine-title">Academic Prediction</h3>
-                            <p class="card-engine-description">
-                                Forecast future academic performance through 8-semester regression analysis and grade velocity tracking.
-                            </p>
-
-                            <div class="card-features-list">
-                                <span class="card-chip"><i class="fa-solid fa-check"></i> SGPA Trendline</span>
-                                <span class="card-chip"><i class="fa-solid fa-check"></i> Backlog Risk Index</span>
-                            </div>
-
-                            <div class="card-action-footer">
-                                <span class="action-prompt">Launch Academic Engine</span>
-                                <div class="action-icon-circle">
-                                    <i class="fa-solid fa-arrow-right"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-
-                    <!-- Card 2: Career Recommendation -->
-                    <a href="career.html" class="engine-card fade-in-element" id="card-career" style="--stagger: 0.85s;">
-                        <div class="card-border-frame"></div>
-                        <div class="card-inner-content">
-                            <div class="card-top-row">
-                                <div class="card-icon-emblem">
-                                    <i class="fa-solid fa-compass"></i>
-                                </div>
-                                <span class="card-category-tag">VECTOR SIMILARITY</span>
-                            </div>
-                            
-                            <h3 class="card-engine-title">Career Recommendation</h3>
-                            <p class="card-engine-description">
-                                Discover your best-matching career paths via mathematical cosine similarity matching against industry role benchmarks.
-                            </p>
-
-                            <div class="card-features-list">
-                                <span class="card-chip"><i class="fa-solid fa-check"></i> Radar Competency</span>
-                                <span class="card-chip"><i class="fa-solid fa-check"></i> Role Fit %</span>
-                            </div>
-
-                            <div class="card-action-footer">
-                                <span class="action-prompt">Discover Career Paths</span>
-                                <div class="action-icon-circle">
-                                    <i class="fa-solid fa-arrow-right"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-
-                    <!-- Card 3: Placement Readiness -->
-                    <a href="placement.html" class="engine-card fade-in-element" id="card-placement" style="--stagger: 0.95s;">
-                        <div class="card-border-frame"></div>
-                        <div class="card-inner-content">
-                            <div class="card-top-row">
-                                <div class="card-icon-emblem">
-                                    <i class="fa-solid fa-gauge-high"></i>
-                                </div>
-                                <span class="card-category-tag">MACHINE LEARNING</span>
-                            </div>
-                            
-                            <h3 class="card-engine-title">Placement Readiness</h3>
-                            <p class="card-engine-description">
-                                Calculate your statistical probability of securing a placement with XGBoost scoring and SHAP feature importance analysis.
-                            </p>
-
-                            <div class="card-features-list">
-                                <span class="card-chip"><i class="fa-solid fa-check"></i> Readiness Gauge</span>
-                                <span class="card-chip"><i class="fa-solid fa-check"></i> Tier Clearance</span>
-                            </div>
-
-                            <div class="card-action-footer">
-                                <span class="action-prompt">Calculate Probability</span>
-                                <div class="action-icon-circle">
-                                    <i class="fa-solid fa-arrow-right"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-
-                    <!-- Card 4: Personalized Roadmap -->
-                    <a href="roadmap.html" class="engine-card fade-in-element" id="card-roadmap" style="--stagger: 1.05s;">
-                        <div class="card-border-frame"></div>
-                        <div class="card-inner-content">
-                            <div class="card-top-row">
-                                <div class="card-icon-emblem">
-                                    <i class="fa-solid fa-map-location-dot"></i>
-                                </div>
-                                <span class="card-category-tag">REMEDIATION ENGINE</span>
-                            </div>
-                            
-                            <h3 class="card-engine-title">Personalized Roadmap</h3>
-                            <p class="card-engine-description">
-                                Identify exact skill gaps and sequence your preparation through milestone checklists, DSA tracks, and weekly goals.
-                            </p>
-
-                            <div class="card-features-list">
-                                <span class="card-chip"><i class="fa-solid fa-check"></i> Skill Gap Subtraction</span>
-                                <span class="card-chip"><i class="fa-solid fa-check"></i> Sequenced Plan</span>
-                            </div>
-
-                            <div class="card-action-footer">
-                                <span class="action-prompt">Generate Action Plan</span>
-                                <div class="action-icon-circle">
-                                    <i class="fa-solid fa-arrow-right"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-
-                    <!-- Card 5: Interview Prep & Question Hub -->
-                    <a href="interview.html" class="engine-card fade-in-element" id="card-interview" style="--stagger: 1.15s;">
-                        <div class="card-border-frame"></div>
-                        <div class="card-inner-content">
-                            <div class="card-top-row">
-                                <div class="card-icon-emblem" style="background: rgba(0, 210, 255, 0.12); color: var(--accent-cyan);">
-                                    <i class="fa-solid fa-user-tie"></i>
-                                </div>
-                                <span class="card-category-tag">CAMPUS RECRUITMENT HUB</span>
-                            </div>
-                            
-                            <h3 class="card-engine-title">Interview &amp; Q&amp;A Hub</h3>
-                            <p class="card-engine-description">
-                                Master 140+ curated company interview questions across DSA, Core CS, System Design, and STAR behavioral rounds with authentic senior placement diaries and In-Hand CTC calculator.
-                            </p>
-
-                            <div class="card-features-list">
-                                <span class="card-chip"><i class="fa-solid fa-check"></i> 140+ Curated Questions</span>
-                                <span class="card-chip"><i class="fa-solid fa-check"></i> Senior Diaries</span>
-                                <span class="card-chip"><i class="fa-solid fa-check"></i> In-Hand CTC Calc</span>
-                            </div>
-
-                            <div class="card-action-footer">
-                                <span class="action-prompt">Practice Interview Questions</span>
-                                <div class="action-icon-circle">
-                                    <i class="fa-solid fa-arrow-right"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-
-                </div>
-
-                <!-- Secondary Exploration Banner -->
-                <div class="landing-portal-banner fade-in-element" style="--stagger: 1.15s;">
-                    <div class="banner-left">
-                        <div class="banner-badge-gold">
-                            <i class="fa-solid fa-user-graduate"></i>
-                            <span>STUDENT DEMOGRAPHIC &amp; METRIC INTAKE</span>
-                        </div>
-                        <h3 class="banner-title">Need to configure or update your profile vector?</h3>
-                        <p class="banner-description">
-                            Input your academic scores, GitHub commits, LeetCode ratings, and technical proficiencies into our quantitative feature pipeline.
-                        </p>
-                    </div>
-                    <div class="banner-right">
-                        <a href="input.html" class="btn-gold-primary btn-large">
-                            <i class="fa-solid fa-sliders"></i>
-                            <span>Configure Student Vector</span>
-                        </a>
-                        <a href="dashboard.html" class="btn-gold-ghost btn-large">
-                            <span>Open Mentorship Hub</span>
-                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                        </a>
-                    </div>
+                    <ul class="objective-list">
+                        <li>
+                            <i class="fa-solid fa-circle-check objective-check"></i>
+                            <span>Analyze academic performance and skills</span>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-circle-check objective-check"></i>
+                            <span>Recommend the most suitable career paths</span>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-circle-check objective-check"></i>
+                            <span>Predict placement readiness</span>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-circle-check objective-check"></i>
+                            <span>Provide a personalized learning roadmap</span>
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-circle-check objective-check"></i>
+                            <span>Help you prepare for interviews and real-world opportunities</span>
+                        </li>
+                    </ul>
                 </div>
 
             </div>
         </section>
 
     </main>
-
-
 
     <!-- Client-Side Animation & State Engine -->
     <script src="../js/app.js"></script>

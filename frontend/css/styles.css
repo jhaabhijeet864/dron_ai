@@ -1522,14 +1522,7 @@ b {
 }
 
 .page-intro-banner::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 300px;
-    background: radial-gradient(circle at 100% 50%, rgba(255, 122, 0, 0.12), transparent 70%);
-    pointer-events: none;
+    display: none;
 }
 
 .page-intro-text h1 {

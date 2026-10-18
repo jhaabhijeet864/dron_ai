@@ -262,7 +262,7 @@
             <!-- Content Area -->
             <div class="app-content">
                 <!-- Page Banner -->
-                <div class="page-intro-banner" style="background: linear-gradient(135deg, #FFFFFF 0%, #DCFCE7 100%); border: 1px solid #86EFAC; border-radius: 18px; padding: 1.75rem 2rem; margin-bottom: 2rem;">
+                <div class="page-intro-banner" style="background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 18px; padding: 1.75rem 2rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);">
                     <div class="page-intro-text">
                         <h1 style="font-size: 1.75rem; font-weight: 800; color: #0F172A; margin-bottom: 0.35rem;">Settings &amp; Configuration</h1>
                         <p style="font-size: 0.92rem; color: #475569; margin: 0;">Manage your student identity, telemetry sync (GitHub, LeetCode), predictive engine endpoints, and local storage data.</p>
@@ -469,6 +469,17 @@
     <!-- Core App Scripts -->
     <script src="../js/app.js"></script>
     <script>
+        // Apply saved API URL to window.API_BASE_URL before any client requests begin
+        try {
+            const rawEarly = localStorage.getItem("dron_settings");
+            if (rawEarly) {
+                const early = JSON.parse(rawEarly);
+                if (typeof early.apiUrl === "string" && early.apiUrl.trim()) {
+                    window.API_BASE_URL = early.apiUrl.trim();
+                }
+            }
+        } catch (_) {}
+
         document.addEventListener("DOMContentLoaded", () => {
             // Populate form fields from current student profile in localStorage
             const profile = (typeof getStudentProfile === "function") ? getStudentProfile() : null;
@@ -486,6 +497,29 @@
                 if (leetcodeInput && profile.leetcodeUrl) leetcodeInput.value = profile.leetcodeUrl;
             }
 
+            // Populate settings fields from localStorage and apply API URL to window.API_BASE_URL
+            try {
+                const rawSettings = localStorage.getItem("dron_settings");
+                if (rawSettings) {
+                    const settings = JSON.parse(rawSettings);
+                    const apiUrlInput = document.getElementById("setting-api-url");
+                    const toggleGithub = document.getElementById("setting-toggle-github");
+                    const toggleLeetcode = document.getElementById("setting-toggle-leetcode");
+                    const toggleShap = document.getElementById("setting-toggle-shap");
+
+                    if (typeof settings.apiUrl === "string" && settings.apiUrl.trim()) {
+                        const savedUrl = settings.apiUrl.trim();
+                        if (apiUrlInput) apiUrlInput.value = savedUrl;
+                        window.API_BASE_URL = savedUrl;
+                    }
+                    if (toggleGithub && typeof settings.syncGithub === "boolean") toggleGithub.checked = settings.syncGithub;
+                    if (toggleLeetcode && typeof settings.syncLeetcode === "boolean") toggleLeetcode.checked = settings.syncLeetcode;
+                    if (toggleShap && typeof settings.showShap === "boolean") toggleShap.checked = settings.showShap;
+                }
+            } catch (e) {
+                console.warn("Could not load settings from localStorage:", e);
+            }
+
             function showToast(msg) {
                 const toast = document.getElementById("settings-toast");
                 const toastMsg = document.getElementById("toast-message");
@@ -498,6 +532,19 @@
             }
 
             function handleSave() {
+                // Reject an API URL that is empty after trimming before persisting or assigning window.API_BASE_URL
+                const apiUrlInput = document.getElementById("setting-api-url");
+                let targetApiUrl = "http://127.0.0.1:5000/api";
+                if (apiUrlInput) {
+                    const trimmed = apiUrlInput.value.trim();
+                    if (!trimmed) {
+                        showToast("API Base URL cannot be empty.");
+                        if (typeof apiUrlInput.focus === "function") apiUrlInput.focus();
+                        return;
+                    }
+                    targetApiUrl = trimmed;
+                }
+
                 const current = (typeof getStudentProfile === "function") ? getStudentProfile() : {};
                 const nameInput = document.getElementById("setting-fullname");
                 const branchInput = document.getElementById("setting-branch");
@@ -518,6 +565,22 @@
                     saveStudentProfile(updated);
                 } else {
                     localStorage.setItem("dron_student_profile", JSON.stringify(updated));
+                }
+
+                // Persist engine and sync settings
+                const toggleGithub = document.getElementById("setting-toggle-github");
+                const toggleLeetcode = document.getElementById("setting-toggle-leetcode");
+                const toggleShap = document.getElementById("setting-toggle-shap");
+
+                const appSettings = {
+                    apiUrl: targetApiUrl,
+                    syncGithub: toggleGithub ? toggleGithub.checked : true,
+                    syncLeetcode: toggleLeetcode ? toggleLeetcode.checked : true,
+                    showShap: toggleShap ? toggleShap.checked : true,
+                };
+                localStorage.setItem("dron_settings", JSON.stringify(appSettings));
+                if (typeof window !== "undefined") {
+                    window.API_BASE_URL = appSettings.apiUrl;
                 }
 
                 if (typeof hydrateCommonUI === "function") {
@@ -560,13 +623,14 @@
                 });
             }
 
-            // Clear Cache
+            // Clear Cache (Preserve guest authentication credentials)
             const clearBtn = document.getElementById("btn-clear-storage");
             if (clearBtn) {
                 clearBtn.addEventListener("click", () => {
-                    if (confirm("Clear local cache and storage?")) {
-                        localStorage.clear();
-                        showToast("Local storage cleared. Reloading...");
+                    if (confirm("Clear local cache and application settings?")) {
+                        localStorage.removeItem("dron_student_profile");
+                        localStorage.removeItem("dron_settings");
+                        showToast("Local storage cache cleared. Reloading...");
                         setTimeout(() => window.location.reload(), 600);
                     }
                 });

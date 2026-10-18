@@ -4,17 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Dron AI - Interactive AI Mock Interview & Real-Time Performance Analytics Dashboard">
-    <title>Dron AI — NeuroMock Interview & Analytics Dashboard</title>
+    <title>Dron AI — AI Mock Interview Simulator</title>
 
     <!-- Google Fonts: Inter & JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Tailwind CSS CDN -->
+    <!-- Font Awesome 6 Icons via CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Main Platform Stylesheet -->
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@0.344.0"></script>
+
+    <!-- Tailwind CSS CDN (with preflight disabled to harmoniously respect platform styles) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            corePlugins: {
+                preflight: false,
+            },
             theme: {
                 extend: {
                     colors: {
@@ -40,20 +52,8 @@
         };
     </script>
 
-        <!-- Font Awesome 6 Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Lucide Icons CDN -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-
     <style>
-        body {
-            background-color: #F8FAFC;
-            background-image: radial-gradient(circle at 50% -10%, rgba(134, 239, 172, 0.22) 0%, rgba(248, 250, 252, 0) 65%);
-            background-attachment: fixed;
-            color: #111827;
-        }
-
-        /* SaaS Card Classes */
+        /* SaaS Card & Simulator Styling */
         .glass-panel {
             background: #FFFFFF;
             border: 1px solid #E5E7EB;
@@ -65,27 +65,10 @@
             border: 1px solid #E5E7EB;
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #F8FAFC;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #CBD5E1;
-            border-radius: 9999px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94A3B8;
-        }
-
-
         /* Pulse glow animation */
         @keyframes pulseGlow {
-            0%, 100% { box-shadow: 0 0 15px rgba(6, 182, 212, 0.4); }
-            50% { box-shadow: 0 0 25px rgba(6, 182, 212, 0.8); }
+            0%, 100% { box-shadow: 0 0 15px rgba(34, 197, 94, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(34, 197, 94, 0.6); }
         }
         .animate-pulse-glow {
             animation: pulseGlow 2s infinite ease-in-out;
@@ -97,92 +80,211 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased selection:bg-cyan-500 selection:text-black">
+<body>
 
-    <!-- ===================================================================== -->
-    <!-- 1. HEADER & ROLE SELECTOR NAVIGATION -->
-    <!-- ===================================================================== -->
-    <header class="w-full glass-panel border-b border-cyberBorder px-6 py-4 sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <!-- Brand & Progress Tracker -->
-            <div class="flex items-center gap-4">
-                <div class="relative flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-cyan-500/20 via-indigo-500/20 to-violet-500/30 border border-cyan-500/30 shadow-neon-cyan">
-                    <i data-lucide="cpu" class="w-6 h-6 text-neonCyan"></i>
-                    <span class="absolute -top-1 -right-1 flex h-3 w-3">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-3 w-3 bg-cyan-500"></span>
-                    </span>
+    <div class="app-container">
+        <!-- Fixed Left Sidebar -->
+        <aside class="app-sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="sidebar-brand-link" title="Open Main Landing Page">
+                    <div class="brand-logo-icon">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <div class="brand-info">
+                        <span class="brand-title">Dron AI</span>
+                        <span class="brand-subtitle">Career Intelligence</span>
+                    </div>
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <!-- Group 1: OVERVIEW -->
+                <div class="nav-section-title">
+                    <i class="fa-solid fa-shapes section-icon"></i>
+                    <span>OVERVIEW</span>
+                </div>
+                <div class="nav-group-card">
+                    <a href="dashboard.html" class="nav-item" data-page="dashboard">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                        <span class="nav-item-title">Dashboard</span>
+                    </a>
                 </div>
 
-                <div>
-                    <div class="flex items-center gap-2">
-                        <h1 class="text-xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-                            Dron AI <span class="text-[11px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono">NeuroMock v2.4</span>
-                        </h1>
-                    </div>
-                    <div class="flex items-center gap-2 mt-0.5">
-                        <span id="roundTrackerText" class="text-xs font-mono text-emerald-600 font-semibold tracking-wide">
-                            Round 2 of 4
-                        </span>
-                        <span class="text-slate-300">•</span>
-                        <span id="roundSubcategoryText" class="text-xs text-slate-600 truncate max-w-xs">
-                            System Design & Distributed Scalability
-                        </span>
+                <!-- Group 2: PROFILE & ACADEMICS -->
+                <div class="nav-section-title">
+                    <i class="fa-regular fa-user section-icon"></i>
+                    <span>PROFILE &amp; ACADEMICS</span>
+                </div>
+                <div class="nav-group-card">
+                    <a href="input.html" class="nav-item" data-page="profile">
+                        <div class="nav-item-icon">
+                            <i class="fa-regular fa-id-card"></i>
+                        </div>
+                        <span class="nav-item-title">Profile</span>
+                    </a>
+                    <a href="academic.html" class="nav-item" data-page="academic">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                        </div>
+                        <span class="nav-item-title">Academic</span>
+                    </a>
+                </div>
+
+                <!-- Group 3: CAREER INTELLIGENCE -->
+                <div class="nav-section-title">
+                    <i class="fa-solid fa-brain section-icon"></i>
+                    <span>CAREER INTELLIGENCE</span>
+                </div>
+                <div class="nav-group-card">
+                    <a href="placement.html" class="nav-item" data-page="placement">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
+                        <span class="nav-item-title">Placement</span>
+                    </a>
+                    <a href="career.html" class="nav-item" data-page="career">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-compass"></i>
+                        </div>
+                        <span class="nav-item-title">Career</span>
+                    </a>
+                    <a href="roadmap.html" class="nav-item" data-page="roadmap">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-route"></i>
+                        </div>
+                        <span class="nav-item-title">Roadmap</span>
+                    </a>
+                </div>
+
+                <!-- Group 4: INTERVIEW & SKILLS -->
+                <div class="nav-section-title">
+                    <i class="fa-regular fa-comments section-icon"></i>
+                    <span>INTERVIEW &amp; SKILLS</span>
+                </div>
+                <div class="nav-group-card">
+                    <a href="mock_interview.html" class="nav-item active" data-page="mock-interview">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-microphone"></i>
+                        </div>
+                        <span class="nav-item-title">Mock Interview</span>
+                    </a>
+                    <a href="interview.html" class="nav-item" data-page="interview">
+                        <div class="nav-item-icon">
+                            <i class="fa-regular fa-message"></i>
+                        </div>
+                        <span class="nav-item-title">Interview</span>
+                    </a>
+                    <a href="softskills.html" class="nav-item" data-page="soft-skills">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-ear-listen"></i>
+                        </div>
+                        <span class="nav-item-title">Soft Skills</span>
+                    </a>
+                </div>
+
+                <!-- Group 5: SYSTEM -->
+                <div class="nav-section-title">
+                    <i class="fa-solid fa-gear section-icon"></i>
+                    <span>SYSTEM</span>
+                </div>
+                <div class="nav-group-card">
+                    <a href="settings.html" class="nav-item" data-page="settings">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-gear"></i>
+                        </div>
+                        <span class="nav-item-title">Settings</span>
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-mini-card">
+                    <div class="user-avatar" id="sidebar-user-avatar">RJ</div>
+                    <div class="user-details">
+                        <div class="user-name" id="sidebar-user-name">Rohan Jha</div>
+                        <div class="user-meta" id="sidebar-user-meta">Sem 6 • B.Tech CSE</div>
                     </div>
                 </div>
             </div>
+        </aside>
 
-            <!-- Header Controls: Role Selector, Difficulty Toggle, Analytics Drawer Trigger -->
-            <div class="flex flex-wrap items-center gap-3">
-                <!-- Target Role Dropdown -->
-                <div class="relative">
-                    <label for="roleSelector" class="sr-only">Target Role</label>
-                    <select id="roleSelector" class="bg-white text-slate-800 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-medium focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all cursor-pointer shadow-sm">
-                        <option value="Fullstack Engineer">Fullstack Engineer</option>
-                        <option value="AI/ML Engineer">AI/ML Engineer</option>
-                        <option value="Product Manager">Product Manager</option>
-                        <option value="DevOps/SRE">DevOps / SRE</option>
-                        <option value="Distributed Systems Architect">Distributed Systems Architect</option>
-                    </select>
+        <!-- Main Workspace -->
+        <main class="app-main">
+            <!-- Platform Header Bar -->
+            <header class="app-header">
+                <div class="header-left">
+                    <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle navigation">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="header-greeting">
+                        <h1 class="greeting-title">AI Mock Interview <span>Simulator</span> 🎙️</h1>
+                    </div>
                 </div>
 
-                <!-- Difficulty Segmented Toggle -->
-                <div id="difficultyContainer" class="flex items-center bg-slate-100 border border-slate-200 rounded-lg p-0.5">
-                    <button data-diff="Junior" class="diff-btn px-2.5 py-1 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900 transition-all">Junior</button>
-                    <button data-diff="Mid-Level" class="diff-btn px-2.5 py-1 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900 transition-all">Mid-Level</button>
-                    <button data-diff="Senior" class="diff-btn px-2.5 py-1 text-xs font-medium rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm font-semibold transition-all">Senior</button>
-                    <button data-diff="FAANG-level" class="diff-btn px-2.5 py-1 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900 transition-all">FAANG-level</button>
+                <div class="header-right">
+                    <div class="header-badges">
+                        <div class="engine-live-pill checking" id="system-status-pill" title="Checking AI Engine status...">
+                            <span class="status-indicator-dot" id="system-status-dot"></span>
+                            <span class="status-indicator-text" id="system-status-text">CHECKING...</span>
+                        </div>
+                        <span class="badge" style="background: #ECFDF5; color: #16A34A; border: 1px solid #86EFAC;">
+                            <span id="roundTrackerText">Round 2 of 4</span>
+                        </span>
+                    </div>
+
+                    <!-- Past Sessions Button -->
+                    <button id="openHistoryBtn" class="btn btn-outline btn-small" type="button">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        <span>Past Sessions</span>
+                    </button>
+
+                    <!-- Return to Interview Hub -->
+                    <a href="interview.html" class="btn btn-outline btn-small">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>Q&amp;A Hub</span>
+                    </a>
+                </div>
+            </header>
+
+            <!-- App Workspace Content -->
+            <div class="app-content" style="max-width: 1400px; margin: 0 auto;">
+                
+                <!-- Controls Ribbon: Role Selector & Difficulty Toggles -->
+                <div class="glass-panel rounded-2xl p-4 mb-6 flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Role:</span>
+                            <select id="roleSelector" class="bg-white text-slate-800 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-medium focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 cursor-pointer shadow-sm">
+                                <option value="Fullstack Engineer">Fullstack Engineer</option>
+                                <option value="AI/ML Engineer">AI/ML Engineer</option>
+                                <option value="Product Manager">Product Manager</option>
+                                <option value="DevOps/SRE">DevOps / SRE</option>
+                                <option value="Distributed Systems Architect">Distributed Systems Architect</option>
+                            </select>
+                        </div>
+
+                        <div class="h-4 w-[1px] bg-slate-200 hidden sm:block"></div>
+
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Difficulty:</span>
+                            <div id="difficultyContainer" class="flex items-center bg-slate-100 border border-slate-200 rounded-lg p-0.5">
+                                <button data-diff="Junior" class="diff-btn px-2.5 py-1 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900 transition-all">Junior</button>
+                                <button data-diff="Mid-Level" class="diff-btn px-2.5 py-1 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900 transition-all">Mid-Level</button>
+                                <button data-diff="Senior" class="diff-btn px-2.5 py-1 text-xs font-medium rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm font-semibold transition-all">Senior</button>
+                                <button data-diff="FAANG-level" class="diff-btn px-2.5 py-1 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900 transition-all">FAANG-level</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 text-xs text-slate-500">
+                        <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span id="roundSubcategoryText" class="font-medium text-slate-700">System Design &amp; Distributed Scalability</span>
+                    </div>
                 </div>
 
-                <!-- Performance Analytics & History Button -->
-                <button id="openHistoryBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-xs font-medium text-slate-700 hover:text-emerald-700 transition-all shadow-sm">
-                    <i data-lucide="history" class="w-3.5 h-3.5 text-emerald-600"></i>
-                    <span>Past Sessions</span>
-                </button>
-
-                <!-- Return to Interview Hub -->
-                <a href="interview.html" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-xs font-medium text-emerald-700 transition-all shadow-sm">
-                    <i data-lucide="arrow-left" class="w-3.5 h-3.5 text-emerald-600"></i>
-                    <span>Q&amp;A Hub</span>
-                </a>
-
-                <a href="dashboard.html" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-xs font-medium text-slate-700 hover:text-slate-900 transition-all shadow-sm">
-                    <i data-lucide="layout-dashboard" class="w-3.5 h-3.5 text-slate-500"></i>
-                    <span>Dashboard</span>
-                </a>
-            </div>
-        </div>
-    </header>
-
-    <!-- ===================================================================== -->
-    <!-- MAIN SIMULATOR WORKSPACE -->
-    <!-- ===================================================================== -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-8 space-y-8">
-
-        <!-- ================================================================= -->
-        <!-- 2. LIVE INTERVIEW SIMULATOR CARD -->
-        <!-- ================================================================= -->
-        <section class="space-y-6">
+                <section class="space-y-6">
 
             <!-- A. Question Display Banner -->
             <div class="w-full glass-panel rounded-2xl p-6 shadow-glass-card relative overflow-hidden">
@@ -625,9 +727,10 @@
                     </div>
                 </div>
             </div>
-        </section>
-
-    </main>
+                        </section>
+            </div><!-- /.app-content -->
+        </main><!-- /.app-main -->
+    </div><!-- /.app-container -->
 
     <!-- ===================================================================== -->
     <!-- 4. PERFORMANCE ANALYTICS & HISTORY DRAWER (SLIDE-OVER) -->
@@ -715,6 +818,9 @@
     <!-- ===================================================================== -->
     <!-- INTERACTIVE APP JAVASCRIPT LOGIC -->
     <!-- ===================================================================== -->
+    <!-- Main Platform Scripts -->
+    <script src="../js/app.js"></script>
+
     <script>
         // Initialize Lucide Icons
         lucide.createIcons();
