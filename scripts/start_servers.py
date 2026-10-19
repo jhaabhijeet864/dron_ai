@@ -20,10 +20,10 @@ def main():
     print("[1/2] Starting Flask Backend API on http://localhost:5000 ...")
     backend = subprocess.Popen([sys.executable, "run.py"])
 
-    # 2. Start Frontend Static HTTP Server on port 8000 (bind 127.0.0.1)
+    # 2. Start Frontend Static HTTP Server on port 8000 (bind all interfaces for dual-stack localhost)
     print("[2/2] Starting Frontend Web Server on http://localhost:8000 ...")
     frontend = subprocess.Popen(
-        [sys.executable, "-m", "http.server", "8000", "--bind", "127.0.0.1"],
+        [sys.executable, "-m", "http.server", "8000"],
         cwd="frontend",
     )
 
@@ -33,15 +33,16 @@ def main():
     print("\n==============================================================")
     print("       ✅ Both Servers Are Live & Ready!                     ")
     print("==============================================================")
-    print("   🌐 Web Dashboard: http://localhost:8000")
-    print("      (Direct link:  http://localhost:8000/html/index.html)")
-    print("   ⚙️  Backend API:   http://localhost:5000/api/health")
+    print("   🌐 Web Landing Page: http://localhost:8000/html/index.html")
+    print("      (Or via IPv4:     http://127.0.0.1:8000/html/index.html)")
+    print("      (Root redirect:   http://localhost:8000)")
+    print("   ⚙️  Backend API:      http://localhost:5000/api/health")
     print("==============================================================")
     print("   Press Ctrl+C in this terminal anytime to stop both servers.\n")
 
-    # Automatically open the dashboard in the user's default browser
+    # Automatically open the landing page in the user's default browser
     try:
-        webbrowser.open("http://localhost:8000")
+        webbrowser.open("http://127.0.0.1:8000/html/index.html")
     except Exception:
         pass
 

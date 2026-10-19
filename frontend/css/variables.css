@@ -84,7 +84,7 @@
     /* ── Gradients ── */
     --gradient-mint: linear-gradient(135deg, #FFFFFF 0%, #DCFCE7 100%);
     --gradient-mint-soft: linear-gradient(135deg, #F8FAFC 0%, #ECFDF5 100%);
-    --gradient-mint-glow: radial-gradient(circle at 50% 0%, rgba(134, 239, 172, 0.35) 0%, rgba(248, 250, 252, 0) 70%);
+    --gradient-mint-glow: none;
     --gradient-green-button: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
     --gradient-green-hover: linear-gradient(135deg, #16A34A 0%, #15803D 100%);
     --gradient-dark-card: linear-gradient(145deg, #18181B 0%, #111111 100%);
@@ -157,7 +157,7 @@
     --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
 
     /* ── Sidebar & Navbar ── */
-    --sidebar-width: 250px;
+    --sidebar-width: 260px;
     --sidebar-collapsed-width: 72px;
     --navbar-height: 64px;
 }

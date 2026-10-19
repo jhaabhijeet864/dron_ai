@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dron AI - Platform Configuration, Telemetry Integrations & Student Settings">
+    <title>Dron AI — Settings &amp; Preferences</title>
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="../css/styles.css">
+    <!-- Font Awesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        @media (max-width: 640px) {
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .settings-toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.85rem 0;
+            border-bottom: 1px solid #F1F5F9;
+        }
+        .settings-toggle-row:last-child {
+            border-bottom: none;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #E2E8F0;
+            transition: .25s ease;
+            border-radius: 24px;
+        }
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .25s ease;
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        }
+        input:checked + .toggle-slider {
+            background-color: #22C55E;
+        }
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+        .toast-notification {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #111827;
+            color: #FFFFFF;
+            padding: 0.75rem 1.25rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            font-size: 0.88rem;
+            font-weight: 500;
+            z-index: 9999;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+        }
+        .toast-notification.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        .toast-icon {
+            color: #22C55E;
+            font-size: 1.05rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Fixed Left Sidebar -->
+        <aside class="app-sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="sidebar-brand-link" title="Open Main Landing Page">
+                    <div class="brand-logo-icon">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <div class="brand-info">
+                        <span class="brand-title">Dron AI</span>
+                        <span class="brand-subtitle">CAREER INTELLIGENCE</span>
+                    </div>
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <!-- Group 1: OVERVIEW -->
+                <div class="nav-section-title">
+                    <i class="fa-solid fa-shapes section-icon"></i>
+                    <span>OVERVIEW</span>
+                </div>
+                <div class="nav-group-card">
+                    <a href="dashboard.html" class="nav-item" data-page="dashboard">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-chart-simple"></i>
+                        </div>
+                        <span class="nav-item-title">Dashboard</span>
+                    </a>
+                </div>
+
+                <!-- Group 2: PROFILE & ACADEMICS -->
+                <div class="nav-section-title">
+                    <i class="fa-solid fa-user section-icon"></i>
+                    <span>PROFILE &amp; ACADEMICS</span>
+                </div>
+                <div class="nav-group-card">
+                    <a href="input.html" class="nav-item" data-page="profile">
+                        <div class="nav-item-icon">
+                            <i class="fa-regular fa-user"></i>
+                        </div>
+                        <span class="nav-item-title">Student Profile</span>
+                    </a>
+                    <a href="academic.html" class="nav-item" data-page="academic">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                        </div>
+                        <span class="nav-item-title">Academic Records</span>
+                    </a>
+                    <a href="input.html#skills" class="nav-item" data-page="skills-connections">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-link"></i>
+                        </div>
+                        <span class="nav-item-title">Skills &amp; Connections</span>
+                    </a>
+                </div>
+
+                <!-- Group 3: CAREER INTELLIGENCE -->
+                <div class="nav-section-title">
+                    <i class="fa-solid fa-robot section-icon"></i>
+                    <span>CAREER INTELLIGENCE</span>
+                </div>
+                <div class="nav-group-card">
+                    <a href="academic.html#prediction" class="nav-item" data-page="academic-prediction">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                        <span class="nav-item-title">Academic Prediction</span>
+                    </a>
+                    <a href="placement.html" class="nav-item" data-page="placement">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
+                        <span class="nav-item-title">Placement Readiness</span>
+                    </a>
+                    <a href="career.html" class="nav-item" data-page="career">
+                        <div class="nav-item-icon">
+                            <i class="fa-regular fa-compass"></i>
+                        </div>
+                        <span class="nav-item-title">Career Recommendations</span>
+                    </a>
+                    <a href="roadmap.html#tab-gap" class="nav-item" data-page="skill-gap">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-sliders"></i>
+                        </div>
+                        <span class="nav-item-title">Skill Gap Analysis</span>
+                    </a>
+                    <a href="roadmap.html" class="nav-item" data-page="roadmap">
+                        <div class="nav-item-icon">
+                            <i class="fa-regular fa-map"></i>
+                        </div>
+                        <span class="nav-item-title">Personalized Roadmap</span>
+                    </a>
+                </div>
+
+                <!-- Group 4: INTERVIEW & DEVELOPMENT -->
+                <div class="nav-section-title">
+                    <i class="fa-solid fa-calendar-check section-icon"></i>
+                    <span>INTERVIEW &amp; DEVELOPMENT</span>
+                </div>
+                <div class="nav-group-card">
+                    <a href="mock_interview.html" class="nav-item" data-page="mock-interview">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-microphone"></i>
+                        </div>
+                        <span class="nav-item-title">AI Mock Interview</span>
+                    </a>
+                    <a href="interview.html" class="nav-item" data-page="interview">
+                        <div class="nav-item-icon">
+                            <i class="fa-regular fa-message"></i>
+                        </div>
+                        <span class="nav-item-title">Interview Guide &amp; Q&amp;A</span>
+                    </a>
+                    <a href="mock_interview.html#history" class="nav-item" data-page="interview-feedback">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-clipboard-check"></i>
+                        </div>
+                        <span class="nav-item-title">Interview Feedback</span>
+                    </a>
+                    <a href="softskills.html" class="nav-item" data-page="soft-skills">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-user-group"></i>
+                        </div>
+                        <span class="nav-item-title">Soft Skills &amp; Pitch</span>
+                    </a>
+                </div>
+
+                <!-- Group 5: SUPPORT -->
+                <div class="nav-section-title">
+                    <i class="fa-solid fa-users section-icon"></i>
+                    <span>SUPPORT</span>
+                </div>
+                <div class="nav-group-card">
+                    <a href="roadmap.html#tab-checkin" class="nav-item" data-page="mentorship">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-user-group"></i>
+                        </div>
+                        <span class="nav-item-title">Mentorship Hub</span>
+                    </a>
+                    <a href="settings.html" class="nav-item active" data-page="settings">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-gear"></i>
+                        </div>
+                        <span class="nav-item-title">Settings &amp; Help</span>
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-mini-card">
+                    <div class="user-avatar" id="sidebar-user-avatar">RJ</div>
+                    <div class="user-details">
+                        <div class="user-name" id="sidebar-user-name">Rohan Jha</div>
+                        <div class="user-meta" id="sidebar-user-meta">Semester 6 &bull; 2026</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="app-main">
+            <!-- Header Bar -->
+            <header class="app-header">
+                <div class="header-left">
+                    <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle navigation">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="header-greeting">
+                        <h1 class="greeting-title">Platform <span>Settings</span></h1>
+                    </div>
+                </div>
+
+                <div class="header-right">
+                    <div class="header-badges">
+                        <div class="engine-live-pill checking" id="system-status-pill" title="Checking AI Engine status...">
+                            <span class="status-indicator-dot" id="system-status-dot"></span>
+                            <span class="status-indicator-text" id="system-status-text">CHECKING...</span>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-small" id="btn-save-settings-top">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Save Changes</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="app-content">
+                <!-- Page Banner -->
+                <div class="page-intro-banner" style="background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 18px; padding: 1.75rem 2rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);">
+                    <div class="page-intro-text">
+                        <h1 style="font-size: 1.75rem; font-weight: 800; color: #0F172A; margin-bottom: 0.35rem;">Settings &amp; Configuration</h1>
+                        <p style="font-size: 0.92rem; color: #475569; margin: 0;">Manage your student identity, telemetry sync (GitHub, LeetCode), predictive engine endpoints, and local storage data.</p>
+                    </div>
+                </div>
+
+                <!-- Settings 2-Column Grid -->
+                <div class="settings-grid">
+                    
+                    <!-- Card 1: Student Demographics & Target Preferences -->
+                    <div class="dash-card">
+                        <div class="dash-card-header">
+                            <div class="dash-card-title-group">
+                                <div class="dash-card-icon" style="background: rgba(34, 197, 94, 0.12); color: #16A34A;">
+                                    <i class="fa-solid fa-user-gear"></i>
+                                </div>
+                                <h2>Student Identity &amp; Target Goal</h2>
+                            </div>
+                            <span class="badge" style="background: #ECFDF5; color: #16A34A; border: 1px solid #86EFAC;">Profile Defaults</span>
+                        </div>
+                        <div class="dash-card-body">
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label class="form-label" for="setting-fullname">Display Full Name</label>
+                                <input type="text" id="setting-fullname" class="form-control" value="Rohan Jha" placeholder="e.g. Rohan Jha">
+                            </div>
+                            <div class="form-row-2" style="margin-bottom: 1rem;">
+                                <div class="form-group">
+                                    <label class="form-label" for="setting-branch">Academic Branch</label>
+                                    <input type="text" id="setting-branch" class="form-control" value="Computer Science &amp; Engineering">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="setting-sem">Current Semester</label>
+                                    <select id="setting-sem" class="form-control">
+                                        <option value="Semester 4">Semester 4</option>
+                                        <option value="Semester 5">Semester 5</option>
+                                        <option value="Semester 6" selected>Semester 6</option>
+                                        <option value="Semester 7">Semester 7</option>
+                                        <option value="Semester 8">Semester 8</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="setting-target-role">Primary Target Career Role</label>
+                                <select id="setting-target-role" class="form-control">
+                                    <option value="Software Development Engineer" selected>Software Development Engineer (SDE)</option>
+                                    <option value="AI / ML Engineer">AI / Machine Learning Engineer</option>
+                                    <option value="Data Scientist">Data Scientist &amp; Quantitative Analyst</option>
+                                    <option value="Full-Stack Developer">Full-Stack Web Engineer</option>
+                                    <option value="Cloud &amp; DevOps Specialist">Cloud &amp; DevOps Specialist</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Developer Telemetry & Integrations -->
+                    <div class="dash-card">
+                        <div class="dash-card-header">
+                            <div class="dash-card-title-group">
+                                <div class="dash-card-icon" style="background: rgba(34, 197, 94, 0.12); color: #16A34A;">
+                                    <i class="fa-solid fa-network-wired"></i>
+                                </div>
+                                <h2>Developer Telemetry Integrations</h2>
+                            </div>
+                            <span class="badge" style="background: #F8FAFC; color: #64748B; border: 1px solid #E5E7EB;">API Sync</span>
+                        </div>
+                        <div class="dash-card-body">
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label class="form-label" for="setting-github-url">
+                                    <i class="fa-brands fa-github" style="margin-right: 0.35rem;"></i> GitHub Profile URL or Username
+                                </label>
+                                <input type="text" id="setting-github-url" class="form-control" value="https://github.com/rohanjha9260">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label class="form-label" for="setting-leetcode-url">
+                                    <i class="fa-solid fa-code" style="margin-right: 0.35rem;"></i> LeetCode Profile URL or Handle
+                                </label>
+                                <input type="text" id="setting-leetcode-url" class="form-control" value="https://leetcode.com/u/rohanjha9260">
+                            </div>
+                            <div class="settings-toggle-row">
+                                <div>
+                                    <div style="font-size: 0.84rem; font-weight: 600; color: #1E293B;">Auto-Sync GitHub Commits</div>
+                                    <div style="font-size: 0.74rem; color: #64748B;">Fetch public commits &amp; repo activity periodically</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="setting-toggle-github" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="settings-toggle-row">
+                                <div>
+                                    <div style="font-size: 0.84rem; font-weight: 600; color: #1E293B;">Auto-Sync LeetCode Rating</div>
+                                    <div style="font-size: 0.74rem; color: #64748B;">Query GraphQL endpoint for contest stats</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="setting-toggle-leetcode" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Machine Learning & Predictive Engine -->
+                    <div class="dash-card">
+                        <div class="dash-card-header">
+                            <div class="dash-card-title-group">
+                                <div class="dash-card-icon" style="background: rgba(34, 197, 94, 0.12); color: #16A34A;">
+                                    <i class="fa-solid fa-microchip"></i>
+                                </div>
+                                <h2>AI Engine &amp; Model Connectivity</h2>
+                            </div>
+                            <span class="badge" style="background: #ECFDF5; color: #16A34A; border: 1px solid #86EFAC;">Active v3.2</span>
+                        </div>
+                        <div class="dash-card-body">
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label class="form-label" for="setting-api-url">Backend REST API Endpoint</label>
+                                <input type="text" id="setting-api-url" class="form-control" value="http://127.0.0.1:5000/api">
+                            </div>
+                            <div class="settings-toggle-row">
+                                <div>
+                                    <div style="font-size: 0.84rem; font-weight: 600; color: #1E293B;">XGBoost Placement Model</div>
+                                    <div style="font-size: 0.74rem; color: #64748B;">Inference SLA &lt;2ms with SHA-256 verification</div>
+                                </div>
+                                <span class="badge" style="background: #ECFDF5; color: #16A34A; border: 1px solid #86EFAC;">Online</span>
+                            </div>
+                            <div class="settings-toggle-row">
+                                <div>
+                                    <div style="font-size: 0.84rem; font-weight: 600; color: #1E293B;">Cosine Similarity Recommender</div>
+                                    <div style="font-size: 0.74rem; color: #64748B;">10-Dimensional normalized career matching</div>
+                                </div>
+                                <span class="badge" style="background: #ECFDF5; color: #16A34A; border: 1px solid #86EFAC;">Online</span>
+                            </div>
+                            <div class="settings-toggle-row">
+                                <div>
+                                    <div style="font-size: 0.84rem; font-weight: 600; color: #1E293B;">Real-Time SHAP Explanations</div>
+                                    <div style="font-size: 0.74rem; color: #64748B;">Display tree-explainer factor contributions</div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="setting-toggle-shap" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 4: Data Management & Cache Control -->
+                    <div class="dash-card">
+                        <div class="dash-card-header">
+                            <div class="dash-card-title-group">
+                                <div class="dash-card-icon" style="background: rgba(34, 197, 94, 0.12); color: #16A34A;">
+                                    <i class="fa-solid fa-database"></i>
+                                </div>
+                                <h2>Data Management &amp; Storage</h2>
+                            </div>
+                            <span class="badge" style="background: #F8FAFC; color: #64748B; border: 1px solid #E5E7EB;">Browser Cache</span>
+                        </div>
+                        <div class="dash-card-body">
+                            <p style="font-size: 0.84rem; color: #475569; margin-bottom: 1.25rem;">
+                                Manage locally stored student telemetry, cached prediction weights, and mock session data.
+                            </p>
+                            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                <button type="button" class="btn btn-outline" id="btn-export-profile" style="justify-content: flex-start;">
+                                    <i class="fa-solid fa-download"></i>
+                                    <span>Export Profile Data (JSON)</span>
+                                </button>
+                                <button type="button" class="btn btn-outline" id="btn-reset-demo" style="justify-content: flex-start;">
+                                    <i class="fa-solid fa-rotate-left"></i>
+                                    <span>Reset to Default Demo Profile (Rohan Jha)</span>
+                                </button>
+                                <button type="button" class="btn btn-outline" id="btn-clear-storage" style="justify-content: flex-start; color: #DC2626; border-color: #FECACA;">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                    <span>Clear Local Storage Cache</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Bottom Save Actions -->
+                <div style="background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 14px; padding: 1.25rem 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+                    <div>
+                        <div style="font-size: 0.9rem; font-weight: 600; color: #1E293B;">Save Configuration</div>
+                        <div style="font-size: 0.78rem; color: #64748B;">All changes take effect immediately across all dashboard modules.</div>
+                    </div>
+                    <div style="display: flex; gap: 0.75rem;">
+                        <a href="dashboard.html" class="btn btn-outline">Cancel</a>
+                        <button type="button" class="btn btn-primary" id="btn-save-settings-bottom">
+                            <i class="fa-solid fa-check"></i>
+                            <span>Save Settings</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast-notification" id="settings-toast">
+        <i class="fa-solid fa-circle-check toast-icon"></i>
+        <span id="toast-message">Settings saved successfully!</span>
+    </div>
+
+    <!-- Core App Scripts -->
+    <script src="../js/app.js"></script>
+    <script>
+        // Shared default API URL constant
+        const DEFAULT_API_URL = "http://127.0.0.1:5000/api";
+
+        // Apply saved API URL to window.API_BASE_URL before any client requests begin
+        try {
+            const rawEarly = localStorage.getItem("dron_settings");
+            if (rawEarly) {
+                const early = JSON.parse(rawEarly);
+                if (typeof early.apiUrl === "string" && early.apiUrl.trim()) {
+                    window.API_BASE_URL = early.apiUrl.trim();
+                }
+            }
+        } catch (_) {}
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // Populate form fields from current student profile in localStorage
+            const profile = (typeof getStudentProfile === "function") ? getStudentProfile() : null;
+            if (profile) {
+                const nameInput = document.getElementById("setting-fullname");
+                const branchInput = document.getElementById("setting-branch");
+                const semSelect = document.getElementById("setting-sem");
+                const githubInput = document.getElementById("setting-github-url");
+                const leetcodeInput = document.getElementById("setting-leetcode-url");
+
+                if (nameInput && profile.fullName) nameInput.value = profile.fullName;
+                if (branchInput && profile.branch) branchInput.value = profile.branch;
+                if (semSelect && profile.currentSem) semSelect.value = profile.currentSem;
+                if (githubInput && profile.githubUrl) githubInput.value = profile.githubUrl;
+                if (leetcodeInput && profile.leetcodeUrl) leetcodeInput.value = profile.leetcodeUrl;
+            }
+
+            // Populate settings fields from localStorage and apply API URL to window.API_BASE_URL
+            try {
+                const rawSettings = localStorage.getItem("dron_settings");
+                if (rawSettings) {
+                    const settings = JSON.parse(rawSettings);
+                    const apiUrlInput = document.getElementById("setting-api-url");
+                    const toggleGithub = document.getElementById("setting-toggle-github");
+                    const toggleLeetcode = document.getElementById("setting-toggle-leetcode");
+                    const toggleShap = document.getElementById("setting-toggle-shap");
+
+                    if (typeof settings.apiUrl === "string" && settings.apiUrl.trim()) {
+                        const savedUrl = settings.apiUrl.trim();
+                        if (apiUrlInput) apiUrlInput.value = savedUrl;
+                        window.API_BASE_URL = savedUrl;
+                    }
+                    if (toggleGithub && typeof settings.syncGithub === "boolean") toggleGithub.checked = settings.syncGithub;
+                    if (toggleLeetcode && typeof settings.syncLeetcode === "boolean") toggleLeetcode.checked = settings.syncLeetcode;
+                    if (toggleShap && typeof settings.showShap === "boolean") toggleShap.checked = settings.showShap;
+                }
+            } catch (e) {
+                console.warn("Could not load settings from localStorage:", e);
+            }
+
+            function showToast(msg) {
+                const toast = document.getElementById("settings-toast");
+                const toastMsg = document.getElementById("toast-message");
+                if (!toast) return;
+                if (toastMsg) toastMsg.textContent = msg;
+                toast.classList.add("show");
+                setTimeout(() => {
+                    toast.classList.remove("show");
+                }, 2800);
+            }
+
+            function handleSave() {
+                // Reject an API URL that is empty after trimming before persisting or assigning window.API_BASE_URL
+                const apiUrlInput = document.getElementById("setting-api-url");
+                let targetApiUrl = DEFAULT_API_URL;
+                if (apiUrlInput) {
+                    const trimmed = apiUrlInput.value.trim();
+                    if (!trimmed) {
+                        showToast("API Base URL cannot be empty.");
+                        if (typeof apiUrlInput.focus === "function") apiUrlInput.focus();
+                        return;
+                    }
+                    targetApiUrl = trimmed;
+                }
+
+                const current = (typeof getStudentProfile === "function") ? getStudentProfile() : {};
+                const nameInput = document.getElementById("setting-fullname");
+                const branchInput = document.getElementById("setting-branch");
+                const semSelect = document.getElementById("setting-sem");
+                const githubInput = document.getElementById("setting-github-url");
+                const leetcodeInput = document.getElementById("setting-leetcode-url");
+
+                const updated = {
+                    ...current,
+                    fullName: nameInput ? nameInput.value.trim() : current.fullName,
+                    branch: branchInput ? branchInput.value.trim() : current.branch,
+                    currentSem: semSelect ? semSelect.value : current.currentSem,
+                    githubUrl: githubInput ? githubInput.value.trim() : current.githubUrl,
+                    leetcodeUrl: leetcodeInput ? leetcodeInput.value.trim() : current.leetcodeUrl,
+                };
+
+                if (typeof saveStudentProfile === "function") {
+                    saveStudentProfile(updated);
+                } else {
+                    localStorage.setItem("dron_student_profile", JSON.stringify(updated));
+                }
+
+                // Persist engine and sync settings
+                const toggleGithub = document.getElementById("setting-toggle-github");
+                const toggleLeetcode = document.getElementById("setting-toggle-leetcode");
+                const toggleShap = document.getElementById("setting-toggle-shap");
+
+                const appSettings = {
+                    apiUrl: targetApiUrl,
+                    syncGithub: toggleGithub ? toggleGithub.checked : true,
+                    syncLeetcode: toggleLeetcode ? toggleLeetcode.checked : true,
+                    showShap: toggleShap ? toggleShap.checked : true,
+                };
+                localStorage.setItem("dron_settings", JSON.stringify(appSettings));
+                if (typeof window !== "undefined") {
+                    window.API_BASE_URL = appSettings.apiUrl;
+                }
+
+                if (typeof hydrateCommonUI === "function") {
+                    hydrateCommonUI(updated);
+                }
+
+                showToast("Settings updated & synchronized!");
+            }
+
+            const btnTop = document.getElementById("btn-save-settings-top");
+            const btnBottom = document.getElementById("btn-save-settings-bottom");
+            if (btnTop) btnTop.addEventListener("click", handleSave);
+            if (btnBottom) btnBottom.addEventListener("click", handleSave);
+
+            // Export JSON
+            const exportBtn = document.getElementById("btn-export-profile");
+            if (exportBtn) {
+                exportBtn.addEventListener("click", () => {
+                    const prof = (typeof getStudentProfile === "function") ? getStudentProfile() : {};
+                    const blob = new Blob([JSON.stringify(prof, null, 2)], { type: "application/json" });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `dron_profile_${Date.now()}.json`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    showToast("Profile JSON exported successfully!");
+                });
+            }
+
+            // Reset Demo Profile
+            const resetBtn = document.getElementById("btn-reset-demo");
+            if (resetBtn) {
+                resetBtn.addEventListener("click", () => {
+                    if (confirm("Reset profile to default demo student Rohan Jha?")) {
+                        localStorage.removeItem("dron_student_profile");
+                        showToast("Reset to default profile. Reloading...");
+                        setTimeout(() => window.location.reload(), 600);
+                    }
+                });
+            }
+
+            // Clear Cache (Preserve guest authentication credentials)
+            const clearBtn = document.getElementById("btn-clear-storage");
+            if (clearBtn) {
+                clearBtn.addEventListener("click", () => {
+                    if (confirm("Clear local cache and application settings?")) {
+                        localStorage.removeItem("dron_student_profile");
+                        localStorage.removeItem("dron_settings");
+                        showToast("Local storage cache cleared. Reloading...");
+                        setTimeout(() => window.location.reload(), 600);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
