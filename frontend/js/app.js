@@ -145,7 +145,7 @@ async function getAuthToken() {
     return inFlightAuthPromise;
 }
 
-async function apiCall(endpoint, method = "GET", body = null) {
+async function apiCall(endpoint, method = "GET", body = null, allowReauth = true) {
     const baseUrl = getApiBaseUrl();
     let token = await getAuthToken();
     const headers = { "Content-Type": "application/json", "Accept": "application/json" };
@@ -160,19 +160,14 @@ async function apiCall(endpoint, method = "GET", body = null) {
             body: body ? JSON.stringify(body) : undefined,
         }, 4000);
 
-        if (res.status === 401) {
+        if (res.status === 401 && allowReauth) {
             localStorage.removeItem("dron_ai_token");
             token = await getAuthToken();
             if (token) {
                 if (typeof syncProfileToBackend === "function" && typeof getStudentProfile === "function") {
-                    await syncProfileToBackend(getStudentProfile());
+                    await syncProfileToBackend(getStudentProfile(), false);
                 }
-                headers["Authorization"] = `Bearer ${token}`;
-                res = await fetchWithTimeout(`${baseUrl}${endpoint}`, {
-                    method,
-                    headers,
-                    body: body ? JSON.stringify(body) : undefined,
-                }, 4000);
+                return await apiCall(endpoint, method, body, false);
             }
         }
 
@@ -185,7 +180,7 @@ async function apiCall(endpoint, method = "GET", body = null) {
     return null;
 }
 
-async function syncProfileToBackend(profile) {
+async function syncProfileToBackend(profile, allowReauth = true) {
     const semIndex = parseInt(String(profile.currentSem || "6").replace(/\D/g, "")) || 6;
     const skillsList = Array.isArray(profile.technicalSkills) ? profile.technicalSkills : [];
     const soft = profile.softSkills || {};
@@ -226,7 +221,7 @@ async function syncProfileToBackend(profile) {
     }
 
     try {
-        const result = await apiCall("/users/profile", "PUT", payload);
+        const result = await apiCall("/users/profile", "PUT", payload, allowReauth);
         return result;
     } catch (err) {
         console.warn("Could not sync profile to backend:", err);
@@ -564,7 +559,10 @@ async function initDashboardPage() {
     let readinessScore = calculatePlacementReadiness(profile);
     let careerMatches = calculateCareerMatches(profile);
 
-    // 2. Fetch Live ML Predictions from XGBoost & Cosine Recommender
+    // 2. Render Card 1: Academic Trajectory Line Chart immediately (profile-only, no backend wait)
+    renderAcademicTrajectoryChart(profile);
+
+    // 3. Fetch Live ML Predictions from XGBoost & Cosine Recommender
     try {
         const [mlPred, mlCareer] = await Promise.allSettled([
             apiCall("/predictions/placement", "POST"),
@@ -604,9 +602,6 @@ async function initDashboardPage() {
     } catch (err) {
         console.warn("Could not retrieve live ML predictions, using fallback:", err);
     }
-
-    // 3. Render Card 1: Academic Trajectory Line Chart (Chart.js)
-    renderAcademicTrajectoryChart(profile);
 
     // 4. Render Card 2: Placement Readiness Semi-Circle Donut Gauge (Chart.js)
     renderPlacementGaugeChart(readinessScore);
@@ -660,12 +655,12 @@ function renderAcademicTrajectoryChart(profile) {
                 {
                     label: "AI Projected Trajectory",
                     data: projectionData,
-                    borderColor: "#ffffff",
+                    borderColor: "#64748B",
                     borderDash: [6, 4],
                     borderWidth: 2.5,
                     fill: false,
                     tension: 0.35,
-                    pointBackgroundColor: "#ffffff",
+                    pointBackgroundColor: "#64748B",
                     pointBorderColor: "#FFFFFF",
                     pointBorderWidth: 2,
                     pointRadius: 5,
@@ -686,8 +681,8 @@ function renderAcademicTrajectoryChart(profile) {
                     position: "top",
                     align: "end",
                     labels: {
-                        color: "#94a3b8",
-                        font: { size: 11, family: "'Plus Jakarta Sans', sans-serif" },
+                        color: "#334155",
+                        font: { size: 11, family: "'Inter', sans-serif", weight: "600" },
                         boxWidth: 12,
                         usePointStyle: true,
                     }
@@ -720,8 +715,8 @@ function renderAcademicTrajectoryChart(profile) {
                         display: false,
                     },
                     ticks: {
-                        color: "#94a3b8",
-                        font: { size: 11 },
+                        color: "#64748B",
+                        font: { size: 11, weight: "500" },
                     }
                 }
             }
@@ -858,8 +853,9 @@ function initAcademicPage() {
                     {
                         label: "University Cohort Benchmark (CSE)",
                         data: [7.80, 7.90, 8.00, 8.10, 8.15, 8.20, 8.25, 8.30],
-                        borderColor: "rgba(255, 255, 255, 0.4)",
+                        borderColor: "#94A3B8",
                         borderDash: [5, 5],
+                        borderWidth: 2,
                         fill: false,
                         pointRadius: 0,
                     }
@@ -913,7 +909,7 @@ async function initPlacementPage() {
             if (scoreBanner) {
                 scoreBanner.replaceChildren();
                 const icon = document.createElement("i");
-                icon.className = "fa-solid fa-shield-check";
+                icon.className = "fa-solid fa-shield-halved";
                 scoreBanner.appendChild(icon);
                 const tier = mlPred.readiness_tier || "Assessment Pending";
                 scoreBanner.appendChild(document.createTextNode(` Overall Score: ${readinessScore}% (${tier})`));
@@ -1007,14 +1003,14 @@ async function initCareerPage() {
                     const tdMatch = document.createElement("td");
                     const matchSpan = document.createElement("span");
                     matchSpan.style.fontFamily = "var(--font-mono)";
-                    matchSpan.style.color = "var(--accent-cyan-light)";
+                    matchSpan.style.color = "#16A34A";
                     matchSpan.style.fontWeight = "700";
                     matchSpan.textContent = `${Math.round(rec.match_pct)}% Match`;
                     tdMatch.appendChild(matchSpan);
 
                     const tdDesc = document.createElement("td");
                     const descBadge = document.createElement("span");
-                    descBadge.className = `badge ${idx === 0 ? "badge-cyan" : "badge-neutral"}`;
+                    descBadge.className = `badge ${idx === 0 ? "badge-success" : "badge-neutral"}`;
                     descBadge.textContent = rec.description || "Target Pathway";
                     tdDesc.appendChild(descBadge);
 
@@ -1055,9 +1051,9 @@ async function initCareerPage() {
                     {
                         label: "Ideal Target (Data / ML Engineer)",
                         data: [85, 90, 80, 85, 85, 80],
-                        borderColor: "#ffffff",
-                        backgroundColor: "rgba(255, 255, 255, 0.12)",
-                        pointBackgroundColor: "#ffffff",
+                        borderColor: "#0284C7",
+                        backgroundColor: "rgba(2, 132, 199, 0.12)",
+                        pointBackgroundColor: "#0284C7",
                         borderDash: [4, 4],
                         borderWidth: 2,
                     }

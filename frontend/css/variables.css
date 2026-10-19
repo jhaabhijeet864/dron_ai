@@ -157,7 +157,7 @@
     --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
 
     /* ── Sidebar & Navbar ── */
-    --sidebar-width: 250px;
+    --sidebar-width: 260px;
     --sidebar-collapsed-width: 72px;
     --navbar-height: 64px;
 }

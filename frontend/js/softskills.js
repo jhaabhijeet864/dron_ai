@@ -341,11 +341,11 @@ function initSoftSkillsDiagnostic() {
                     {
                         label: "Campus Recruiter Benchmark",
                         data: [75, 80, 75, 80, 75],
-                        backgroundColor: "rgba(255, 255, 255, 0.06)",
-                        borderColor: "rgba(255, 255, 255, 0.6)",
+                        backgroundColor: "rgba(100, 116, 139, 0.08)",
+                        borderColor: "#94A3B8",
                         borderDash: [4, 4],
                         pointRadius: 0,
-                        borderWidth: 1.5
+                        borderWidth: 2
                     }
                 ]
             },
