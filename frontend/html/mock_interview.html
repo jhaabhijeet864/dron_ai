@@ -862,6 +862,29 @@
         // ---------------------------------------------------------------------
         const MOCK_QUESTIONS = [
             {
+                id: 'fullstack-junior-000',
+                role: 'Fullstack Engineer',
+                difficulty: 'Junior',
+                category: 'Data Structures & Algorithms',
+                roundTitle: 'Round 1 of 4: Core Fundamentals & Problem Solving',
+                roundIndex: 1,
+                totalRounds: 4,
+                title: 'Two Sum & In-Memory Hash Table Lookup Optimization',
+                scenario: 'Given an array of integers and a target sum, implement an optimal function to return the indices of the two numbers that add up to the target. Explain brute-force O(N^2) limitations and demonstrate how a Hash Map achieves O(N) time complexity with O(N) auxiliary space.',
+                interviewerPersona: {
+                    name: 'Alex Rivera',
+                    title: 'Lead Software Engineer @ CloudTech',
+                    focusAreas: ['Time Complexity', 'Hash Collision Handling', 'Edge Case Validation'],
+                    expectations: 'Demonstrate structured explanation: edge cases (null inputs, duplicate values), space-time tradeoffs, and readable variable naming.'
+                },
+                hints: [
+                    'Consider single-pass hash map insertion while checking for complement.',
+                    'Discuss what happens when duplicate elements exist in the input array.'
+                ],
+                expectedKeywords: ['Hash Map', 'O(N)', 'Complement', 'Lookup Time', 'Space Complexity'],
+                timeLimitSeconds: 180
+            },
+            {
                 id: 'fullstack-senior-001',
                 role: 'Fullstack Engineer',
                 difficulty: 'Senior',
@@ -929,6 +952,29 @@
                     'Suggest localized inventory reservations with asynchronous settlement or optimistic reservation with reconciliation.'
                 ],
                 expectedKeywords: ['Active-Active', 'DynamoDB Global Tables', 'Anycast DNS', 'Idempotency', 'RPO/RTO'],
+                timeLimitSeconds: 180
+            },
+            {
+                id: 'dist-architect-004',
+                role: 'Distributed Systems Architect',
+                difficulty: 'Senior',
+                category: 'Distributed Systems',
+                roundTitle: 'Round 4 of 4: Global Consensus & Partition Tolerance',
+                roundIndex: 4,
+                totalRounds: 4,
+                title: 'Design a Globally Distributed Consensus Store with Raft Protocol',
+                scenario: 'Design a distributed key-value metadata store supporting linearizable reads and writes across 5 geographic zones. Walk through Raft leader election, log replication, handling network partitions (split-brain prevention), and lease-based read optimizations.',
+                interviewerPersona: {
+                    name: 'Elena Rostova',
+                    title: 'Principal Systems Architect @ CoreInfra',
+                    focusAreas: ['Raft Consensus', 'Linearizability', 'Quorum Math', 'Read Index / Leases'],
+                    expectations: 'Evaluate deep understanding of distributed consistency models, network partition survival, and hardware failure modes.'
+                },
+                hints: [
+                    'Explain why Raft requires a majority quorum (N/2 + 1) to commit log entries.',
+                    'Detail how leader leases prevent stale reads without running full consensus on read paths.'
+                ],
+                expectedKeywords: ['Raft', 'Quorum', 'Log Replication', 'Leader Election', 'Linearizable'],
                 timeLimitSeconds: 180
             },
             {
