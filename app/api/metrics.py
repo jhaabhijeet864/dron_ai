@@ -102,7 +102,8 @@ def get_telemetry():
     except ValueError as exc:
         if str(exc) == "Student not found":
             return jsonify({"error": "Student not found"}), 404
-        return jsonify({"error": str(exc)}), 400
+        logger.warning("Validation error fetching telemetry for student %s: %s", student_id, exc)
+        return jsonify({"error": "Invalid input provided"}), 400
     except Exception:
         logger.exception("Unexpected error fetching telemetry for student %s", student_id)
         return jsonify({"error": "Internal server error"}), 500
