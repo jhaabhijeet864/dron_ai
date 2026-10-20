@@ -49,6 +49,7 @@ query userContestRankingInfo($username: String!) {
         globalRanking
         totalParticipants
         attendedContestsCount
+        topPercentage
     }
 }
 """
@@ -72,6 +73,10 @@ def fetch_leetcode_stats(username: str) -> dict:
             - hard_solved: int
             - contest_rating: float
             - ranking: int
+            - real_name: str or None
+            - reputation: int
+            - attended_contests: int
+            - top_percentage: float
 
     Raises:
         ConnectionError: If LeetCode API is unreachable
@@ -86,6 +91,10 @@ def fetch_leetcode_stats(username: str) -> dict:
         "hard_solved": 0,
         "contest_rating": 0.0,
         "ranking": 0,
+        "real_name": None,
+        "reputation": 0,
+        "attended_contests": 0,
+        "top_percentage": 0.0,
     }
     
     if not username:
@@ -112,6 +121,12 @@ def fetch_leetcode_stats(username: str) -> dict:
                 logger.warning(f"LeetCode user not found: {username}")
                 return result
                 
+            profile = matched_user.get("profile") or {}
+            result["real_name"] = profile.get("realName")
+            result["reputation"] = profile.get("reputation", 0)
+            if profile.get("ranking"):
+                result["ranking"] = profile.get("ranking", 0)
+
             stats = matched_user.get("submitStats", {}).get("acSubmissionNum", [])
             for stat in stats:
                 diff = stat.get("difficulty")
@@ -138,7 +153,10 @@ def fetch_leetcode_stats(username: str) -> dict:
             
             if contest_info:
                 result["contest_rating"] = contest_info.get("rating", 0.0)
-                result["ranking"] = contest_info.get("globalRanking", 0)
+                if contest_info.get("globalRanking"):
+                    result["ranking"] = contest_info.get("globalRanking", 0)
+                result["attended_contests"] = contest_info.get("attendedContestsCount", 0)
+                result["top_percentage"] = contest_info.get("topPercentage", 0.0)
 
         return result
         
