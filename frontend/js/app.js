@@ -75,6 +75,161 @@ function saveStudentProfile(profile) {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// Live Backend & ML Inference Engine Client
+// ═══════════════════════════════════════════════════════════════
+
+function getApiBaseUrl() {
+    if (typeof API_BASE_URL !== "undefined" && API_BASE_URL) {
+        return API_BASE_URL;
+    }
+    if (window.API_BASE_URL) {
+        return window.API_BASE_URL;
+    }
+    const isLocalStatic = window.location.port === "8000" || window.location.port === "5500" || window.location.port === "3000";
+    if (!isLocalStatic && window.location.origin && window.location.origin.startsWith("http")) {
+        return "/api";
+    }
+    return "http://localhost:5000/api";
+}
+
+let inFlightAuthPromise = null;
+
+async function fetchWithTimeout(resource, options = {}, timeoutMs = 4000) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+        const response = await fetch(resource, {
+            ...options,
+            signal: controller.signal,
+        });
+        clearTimeout(timer);
+        return response;
+    } catch (err) {
+        clearTimeout(timer);
+        throw err;
+    }
+}
+
+async function getAuthToken() {
+    let token = localStorage.getItem("dron_ai_token");
+    if (token) return token;
+
+    if (inFlightAuthPromise) {
+        return inFlightAuthPromise;
+    }
+
+    inFlightAuthPromise = (async () => {
+        try {
+            const baseUrl = getApiBaseUrl();
+            const res = await fetchWithTimeout(`${baseUrl}/auth/guest`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({}),
+            }, 4000);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.access_token) {
+                    localStorage.setItem("dron_ai_token", data.access_token);
+                    localStorage.setItem("dron_student_id", data.student_id);
+                    return data.access_token;
+                }
+            }
+        } catch (e) {
+            console.warn("Guest authentication offline:", e);
+        } finally {
+            inFlightAuthPromise = null;
+        }
+        return null;
+    })();
+
+    return inFlightAuthPromise;
+}
+
+async function apiCall(endpoint, method = "GET", body = null, allowReauth = true) {
+    const baseUrl = getApiBaseUrl();
+    let token = await getAuthToken();
+    const headers = { "Content-Type": "application/json", "Accept": "application/json" };
+    if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    try {
+        let res = await fetchWithTimeout(`${baseUrl}${endpoint}`, {
+            method,
+            headers,
+            body: body ? JSON.stringify(body) : undefined,
+        }, 4000);
+
+        if (res.status === 401 && allowReauth) {
+            localStorage.removeItem("dron_ai_token");
+            token = await getAuthToken();
+            if (token) {
+                if (typeof syncProfileToBackend === "function" && typeof getStudentProfile === "function") {
+                    await syncProfileToBackend(getStudentProfile(), false);
+                }
+                return await apiCall(endpoint, method, body, false);
+            }
+        }
+
+        if (res.ok) {
+            return await res.json();
+        }
+    } catch (err) {
+        console.warn(`API call error for ${endpoint}:`, err);
+    }
+    return null;
+}
+
+async function syncProfileToBackend(profile, allowReauth = true) {
+    const semIndex = parseInt(String(profile.currentSem || "6").replace(/\D/g, "")) || 6;
+    const skillsList = Array.isArray(profile.technicalSkills) ? profile.technicalSkills : [];
+    const soft = profile.softSkills || {};
+
+    const toFinite = (val, fallback) => {
+        const num = Number(val);
+        return Number.isFinite(num) ? num : fallback;
+    };
+
+    const payload = {
+        academics: [
+            {
+                semester: semIndex,
+                cgpa: Math.min(10, Math.max(0, toFinite(profile.cgpa, 8.0))),
+                attendance_pct: Math.min(100, Math.max(0, toFinite(profile.attendancePct, 85.0))),
+                active_backlogs: Math.max(0, Math.round(toFinite(profile.activeBacklogs, 0))),
+            }
+        ],
+        skills: {
+            dsa_score: skillsList.includes("DSA") ? 85.0 : 45.0,
+            python_prof: skillsList.includes("Python") ? 90.0 : 40.0,
+            cpp_prof: skillsList.includes("C/C++") ? 80.0 : 35.0,
+            aiml_knowledge: skillsList.includes("AI/ML") ? 85.0 : 30.0,
+            communication_score: Math.min(100, Math.max(0, toFinite(soft.communication, 75.0))),
+            total_commits: Math.max(0, Math.round(toFinite(profile.totalCommits, 180))),
+            problems_solved: Math.max(0, Math.round(toFinite(profile.problemsSolved, 240))),
+            contest_rating: Math.max(0, toFinite(profile.contestRating, 1550.0)),
+            project_count: Math.max(0, Math.round(toFinite(profile.projectsCount, 4))),
+            internship_exp: Math.max(0, Math.round(toFinite(profile.internshipsCount, 0)) * 3),
+        }
+    };
+
+    if (profile.githubUrl || profile.leetcodeUrl) {
+        payload.platform_links = {
+            github_handle: profile.githubUrl ? profile.githubUrl.split("/").filter(Boolean).pop() : undefined,
+            leetcode_username: profile.leetcodeUrl ? profile.leetcodeUrl.split("/").filter(Boolean).pop() : undefined,
+        };
+    }
+
+    try {
+        const result = await apiCall("/users/profile", "PUT", payload, allowReauth);
+        return result;
+    } catch (err) {
+        console.warn("Could not sync profile to backend:", err);
+        return null;
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════
 // Multi-Factor Quantitative Intelligence Calculations
 // ═══════════════════════════════════════════════════════════════
 
@@ -314,8 +469,15 @@ function initInputPage() {
     // 5. Form Submission
     const form = document.getElementById("student-input-form");
     if (form) {
-        form.addEventListener("submit", (e) => {
+        form.addEventListener("submit", async (e) => {
             e.preventDefault();
+
+            const submitBtn = form.querySelector("button[type='submit']");
+            const originalBtnHtml = submitBtn ? submitBtn.innerHTML : "Save";
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Running ML Pipeline...';
+            }
 
             // Extract selected technical skills
             const activeChips = document.querySelectorAll(".skill-chip.active");
@@ -358,6 +520,17 @@ function initInputPage() {
 
             saveStudentProfile(updatedProfile);
 
+            // Synchronize student data to backend DB and trigger ML inference
+            try {
+                await syncProfileToBackend(updatedProfile);
+                await Promise.allSettled([
+                    apiCall("/predictions/placement", "POST"),
+                    apiCall("/career/recommend", "POST", { top_k: 5 })
+                ]);
+            } catch (err) {
+                console.warn("Backend ML sync notification:", err);
+            }
+
             // Redirect to Mentorship Dashboard
             window.location.href = "dashboard.html";
         });
@@ -367,7 +540,7 @@ function initInputPage() {
 // ═══════════════════════════════════════════════════════════════
 // Page 2: Main Mentorship Dashboard Handlers (dashboard.html)
 // ═══════════════════════════════════════════════════════════════
-function initDashboardPage() {
+async function initDashboardPage() {
     const profile = getStudentProfile();
 
     // 1. Populate KPI Ribbon
@@ -382,16 +555,58 @@ function initDashboardPage() {
     setText("kpi-solved-val", `${profile.problemsSolved || 240}+`);
     setText("kpi-commits-val", `${profile.totalCommits || 180}+`);
 
-    const readinessScore = calculatePlacementReadiness(profile);
-    const careerMatches = calculateCareerMatches(profile);
+    // Baseline heuristic values (fallback if backend is offline)
+    let readinessScore = calculatePlacementReadiness(profile);
+    let careerMatches = calculateCareerMatches(profile);
 
-    // 2. Render Card 1: Academic Trajectory Line Chart (Chart.js)
+    // 2. Render Card 1: Academic Trajectory Line Chart immediately (profile-only, no backend wait)
     renderAcademicTrajectoryChart(profile);
 
-    // 3. Render Card 2: Placement Readiness Semi-Circle Donut Gauge (Chart.js)
+    // 3. Fetch Live ML Predictions from XGBoost & Cosine Recommender
+    try {
+        const [mlPred, mlCareer] = await Promise.allSettled([
+            apiCall("/predictions/placement", "POST"),
+            apiCall("/career/recommend", "POST", { top_k: 5 }),
+        ]);
+
+        if (mlPred.status === "fulfilled" && mlPred.value && typeof mlPred.value.placement_probability === "number") {
+            readinessScore = Math.round(mlPred.value.placement_probability * 100);
+
+            // Update badge with live ML tier
+            const tierBadge = document.querySelector(".dash-card-header .badge");
+            if (tierBadge && mlPred.value.readiness_tier) {
+                tierBadge.textContent = `XGBoost: ${mlPred.value.readiness_tier}`;
+            }
+        }
+
+        if (mlCareer.status === "fulfilled" && mlCareer.value && Array.isArray(mlCareer.value.recommendations) && mlCareer.value.recommendations.length > 0) {
+            careerMatches = mlCareer.value.recommendations.map((rec, idx) => ({
+                role: rec.career,
+                matchPct: Math.round(rec.match_pct),
+                tag: idx === 0 ? "Top Match" : idx === 1 ? "Strong Fit" : "Viable Pathway",
+                rankClass: idx === 0 ? "rank-1" : idx === 1 ? "rank-2" : "rank-3",
+                fillClass: idx === 0 ? "fill-cyan" : idx === 1 ? "fill-purple" : "fill-slate",
+                description: rec.description || "Calculated using Cosine Vector Proximity against industry benchmarks.",
+            }));
+
+            // Update Top Recommended Role in KPI ribbon
+            const topRoleEl = document.querySelector(".kpi-card:nth-child(4) .kpi-value");
+            if (topRoleEl && careerMatches[0]) {
+                topRoleEl.textContent = careerMatches[0].role;
+            }
+            const skillsMatchEl = document.getElementById("kpi-skills-match-val");
+            if (skillsMatchEl && careerMatches[0]) {
+                skillsMatchEl.textContent = `${careerMatches[0].matchPct}% Match`;
+            }
+        }
+    } catch (err) {
+        console.warn("Could not retrieve live ML predictions, using fallback:", err);
+    }
+
+    // 4. Render Card 2: Placement Readiness Semi-Circle Donut Gauge (Chart.js)
     renderPlacementGaugeChart(readinessScore);
 
-    // 4. Render Card 3: Career Direction Top Matches
+    // 5. Render Card 3: Career Direction Top Matches
     renderCareerDirectionList(careerMatches);
 }
 
@@ -440,12 +655,12 @@ function renderAcademicTrajectoryChart(profile) {
                 {
                     label: "AI Projected Trajectory",
                     data: projectionData,
-                    borderColor: "#ffffff",
+                    borderColor: "#64748B",
                     borderDash: [6, 4],
                     borderWidth: 2.5,
                     fill: false,
                     tension: 0.35,
-                    pointBackgroundColor: "#ffffff",
+                    pointBackgroundColor: "#64748B",
                     pointBorderColor: "#FFFFFF",
                     pointBorderWidth: 2,
                     pointRadius: 5,
@@ -466,8 +681,8 @@ function renderAcademicTrajectoryChart(profile) {
                     position: "top",
                     align: "end",
                     labels: {
-                        color: "#94a3b8",
-                        font: { size: 11, family: "'Plus Jakarta Sans', sans-serif" },
+                        color: "#334155",
+                        font: { size: 11, family: "'Inter', sans-serif", weight: "600" },
                         boxWidth: 12,
                         usePointStyle: true,
                     }
@@ -500,8 +715,8 @@ function renderAcademicTrajectoryChart(profile) {
                         display: false,
                     },
                     ticks: {
-                        color: "#94a3b8",
-                        font: { size: 11 },
+                        color: "#64748B",
+                        font: { size: 11, weight: "500" },
                     }
                 }
             }
@@ -638,8 +853,9 @@ function initAcademicPage() {
                     {
                         label: "University Cohort Benchmark (CSE)",
                         data: [7.80, 7.90, 8.00, 8.10, 8.15, 8.20, 8.25, 8.30],
-                        borderColor: "rgba(255, 255, 255, 0.4)",
+                        borderColor: "#94A3B8",
                         borderDash: [5, 5],
+                        borderWidth: 2,
                         fill: false,
                         pointRadius: 0,
                     }
@@ -663,16 +879,67 @@ function initAcademicPage() {
 /**
  * Page: placement.html (Classification factors & interview competency)
  */
-function initPlacementPage() {
+async function initPlacementPage() {
+    let factorLabels = ["Academic CGPA", "Algorithmic DSA", "Python / Core Tech", "Projects Portfolio", "Internships", "Communication"];
+    let factorWeights = [28, 24, 18, 14, 10, 6];
+    let readinessScore = 74;
+
+    const FEATURE_PRETTY_NAMES = {
+        cgpa: "Academic CGPA",
+        attendance_pct: "Academic Attendance",
+        active_backlogs: "Active Backlogs",
+        dsa_score: "Algorithmic DSA",
+        python_prof: "Python Proficiency",
+        cpp_prof: "C++ Proficiency",
+        aiml_knowledge: "AI/ML Modeling",
+        total_commits: "GitHub Activity",
+        problems_solved: "LeetCode Solved",
+        contest_rating: "Contest Rating",
+        project_count: "Projects Portfolio",
+        communication_score: "Communication & Soft Skills",
+        internship_exp: "Internship Experience"
+    };
+
+    try {
+        const mlPred = await apiCall("/predictions/placement", "POST");
+        if (mlPred && typeof mlPred.placement_probability === "number") {
+            readinessScore = Math.round(mlPred.placement_probability * 100);
+
+            const scoreBanner = document.querySelector(".page-intro-banner .badge-success");
+            if (scoreBanner) {
+                scoreBanner.replaceChildren();
+                const icon = document.createElement("i");
+                icon.className = "fa-solid fa-shield-halved";
+                scoreBanner.appendChild(icon);
+                const tier = mlPred.readiness_tier || "Assessment Pending";
+                scoreBanner.appendChild(document.createTextNode(` Overall Score: ${readinessScore}% (${tier})`));
+            }
+
+            if (mlPred.feature_importance && typeof mlPred.feature_importance === "object") {
+                const sorted = Object.entries(mlPred.feature_importance)
+                    .map(([k, v]) => ({ key: k, label: FEATURE_PRETTY_NAMES[k] || k, weight: Math.round(v * 100) }))
+                    .sort((a, b) => b.weight - a.weight)
+                    .slice(0, 6);
+
+                if (sorted.length > 0) {
+                    factorLabels = sorted.map(s => s.label);
+                    factorWeights = sorted.map(s => s.weight);
+                }
+            }
+        }
+    } catch (e) {
+        console.warn("Could not load ML placement factors:", e);
+    }
+
     const ctx = document.getElementById("placementFactorsChart");
     if (ctx && typeof Chart !== "undefined") {
         new Chart(ctx, {
             type: "bar",
             data: {
-                labels: ["Academic CGPA", "Algorithmic DSA", "Python / Core Tech", "Projects Portfolio", "Internships", "Communication"],
+                labels: factorLabels,
                 datasets: [{
                     label: "XGBoost Model Feature Impact Weight (%)",
-                    data: [28, 24, 18, 14, 10, 6],
+                    data: factorWeights,
                     backgroundColor: [
                         "#22C55E",
                         "#4ADE80",
@@ -692,7 +959,7 @@ function initPlacementPage() {
                     legend: { display: false },
                 },
                 scales: {
-                    x: { max: 35, grid: { color: "#E5E7EB" }, ticks: { color: "#64748B" } },
+                    x: { max: Math.max(...factorWeights, 35) + 5, grid: { color: "#E5E7EB" }, ticks: { color: "#64748B" } },
                     y: { grid: { display: false }, ticks: { color: "#111827" } }
                 }
             }
@@ -703,17 +970,71 @@ function initPlacementPage() {
 /**
  * Page: career.html (Radar Comparison: Current vs Role Requirements)
  */
-function initCareerPage() {
+async function initCareerPage() {
     const profile = getStudentProfile();
     const topBadge = document.getElementById("top-career-match-badge");
-    if (topBadge && profile) {
-        const matches = typeof calculateCareerMatches === "function" ? calculateCareerMatches(profile) : [];
-        if (matches.length > 0) {
-            topBadge.textContent = `#1 Match: ${matches[0].role} (${matches[0].matchPct}%)`;
+
+    try {
+        const mlCareer = await apiCall("/career/recommend", "POST", { top_k: 5 });
+        if (mlCareer && Array.isArray(mlCareer.recommendations) && mlCareer.recommendations.length > 0) {
+            const top = mlCareer.recommendations[0];
+            if (topBadge) {
+                topBadge.textContent = `#1 Match: ${top.career} (${Math.round(top.match_pct)}%)`;
+            }
+
+            const tableBody = document.querySelector(".data-table tbody");
+            if (tableBody) {
+                tableBody.replaceChildren();
+                mlCareer.recommendations.slice(0, 5).forEach((rec, idx) => {
+                    const tr = document.createElement("tr");
+                    const rankClass = idx === 0 ? "rank-1" : idx === 1 ? "rank-2" : "rank-3";
+
+                    const tdRank = document.createElement("td");
+                    const rankSpan = document.createElement("span");
+                    rankSpan.className = `career-rank-pill ${rankClass}`;
+                    rankSpan.textContent = `#${idx + 1}`;
+                    tdRank.appendChild(rankSpan);
+
+                    const tdRole = document.createElement("td");
+                    const strongRole = document.createElement("strong");
+                    strongRole.textContent = rec.career || "";
+                    tdRole.appendChild(strongRole);
+
+                    const tdMatch = document.createElement("td");
+                    const matchSpan = document.createElement("span");
+                    matchSpan.style.fontFamily = "var(--font-mono)";
+                    matchSpan.style.color = "#16A34A";
+                    matchSpan.style.fontWeight = "700";
+                    matchSpan.textContent = `${Math.round(rec.match_pct)}% Match`;
+                    tdMatch.appendChild(matchSpan);
+
+                    const tdDesc = document.createElement("td");
+                    const descBadge = document.createElement("span");
+                    descBadge.className = `badge ${idx === 0 ? "badge-success" : "badge-neutral"}`;
+                    descBadge.textContent = rec.description || "Target Pathway";
+                    tdDesc.appendChild(descBadge);
+
+                    tr.replaceChildren(tdRank, tdRole, tdMatch, tdDesc);
+                    tableBody.appendChild(tr);
+                });
+            }
         }
+    } catch (e) {
+        console.warn("Could not load ML career recommendations:", e);
     }
+
     const ctx = document.getElementById("careerRadarChart");
     if (ctx && typeof Chart !== "undefined") {
+        const skillsList = Array.isArray(profile.technicalSkills) ? profile.technicalSkills : [];
+        const studentScores = [
+            skillsList.includes("DSA") ? 85 : 45,
+            skillsList.includes("Python") ? 90 : 40,
+            skillsList.includes("C/C++") ? 80 : 35,
+            skillsList.includes("AI/ML") ? 85 : 30,
+            skillsList.includes("SQL") ? 80 : 35,
+            Number(profile.softSkills?.communication) || 75
+        ];
+
         new Chart(ctx, {
             type: "radar",
             data: {
@@ -721,7 +1042,7 @@ function initCareerPage() {
                 datasets: [
                     {
                         label: "Current Student Profile",
-                        data: [82, 88, 65, 80, 75, 76],
+                        data: studentScores,
                         borderColor: "#22C55E",
                         backgroundColor: "rgba(134, 239, 172, 0.25)",
                         pointBackgroundColor: "#22C55E",
@@ -730,9 +1051,9 @@ function initCareerPage() {
                     {
                         label: "Ideal Target (Data / ML Engineer)",
                         data: [85, 90, 80, 85, 85, 80],
-                        borderColor: "#ffffff",
-                        backgroundColor: "rgba(255, 255, 255, 0.12)",
-                        pointBackgroundColor: "#ffffff",
+                        borderColor: "#0284C7",
+                        backgroundColor: "rgba(2, 132, 199, 0.12)",
+                        pointBackgroundColor: "#0284C7",
                         borderDash: [4, 4],
                         borderWidth: 2,
                     }
@@ -821,35 +1142,6 @@ function initLandingDashboard() {
         }, 3600);
     }
 
-    // 2. Interactive Spotlight & Glow Physics on the 4 Engine Navigation Cards (GPU Throttled)
-    const cards = document.querySelectorAll(".engine-card");
-    cards.forEach((card) => {
-        let isTicking = false;
-        card.addEventListener("mousemove", (e) => {
-            if (!isTicking) {
-                requestAnimationFrame(() => {
-                    const rect = card.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-                    const glowLayer = card.querySelector(".card-glow-layer");
-                    if (glowLayer) {
-                        glowLayer.style.background = `radial-gradient(circle 300px at ${x}px ${y}px, rgba(255, 122, 0, 0.22) 0%, rgba(255, 152, 56, 0.06) 50%, transparent 80%)`;
-                        glowLayer.style.opacity = "1";
-                    }
-                    isTicking = false;
-                });
-                isTicking = true;
-            }
-        }, { passive: true });
-
-        card.addEventListener("mouseleave", () => {
-            const glowLayer = card.querySelector(".card-glow-layer");
-            if (glowLayer) {
-                glowLayer.style.background = "";
-                glowLayer.style.opacity = "";
-            }
-        }, { passive: true });
-    });
 
     // 3. Header Scrolled Glass Effect
     const header = document.getElementById("landing-header");

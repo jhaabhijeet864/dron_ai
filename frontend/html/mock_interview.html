@@ -4,17 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Dron AI - Interactive AI Mock Interview & Real-Time Performance Analytics Dashboard">
-    <title>Dron AI — NeuroMock Interview & Analytics Dashboard</title>
+    <title>Dron AI — AI Mock Interview Simulator</title>
 
     <!-- Google Fonts: Inter & JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Tailwind CSS CDN -->
+    <!-- Font Awesome 6 Icons via CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Main Platform Stylesheet -->
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@0.344.0"></script>
+
+    <!-- Tailwind CSS CDN (with preflight disabled to harmoniously respect platform styles) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            corePlugins: {
+                preflight: false,
+            },
             theme: {
                 extend: {
                     colors: {
@@ -40,18 +52,8 @@
         };
     </script>
 
-    <!-- Lucide Icons CDN -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-
     <style>
-        body {
-            background-color: #F8FAFC;
-            background-image: radial-gradient(circle at 50% -10%, rgba(134, 239, 172, 0.22) 0%, rgba(248, 250, 252, 0) 65%);
-            background-attachment: fixed;
-            color: #111827;
-        }
-
-        /* SaaS Card Classes */
+        /* SaaS Card & Simulator Styling */
         .glass-panel {
             background: #FFFFFF;
             border: 1px solid #E5E7EB;
@@ -63,27 +65,10 @@
             border: 1px solid #E5E7EB;
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #F8FAFC;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #CBD5E1;
-            border-radius: 9999px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94A3B8;
-        }
-
-
         /* Pulse glow animation */
         @keyframes pulseGlow {
-            0%, 100% { box-shadow: 0 0 15px rgba(6, 182, 212, 0.4); }
-            50% { box-shadow: 0 0 25px rgba(6, 182, 212, 0.8); }
+            0%, 100% { box-shadow: 0 0 15px rgba(34, 197, 94, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(34, 197, 94, 0.6); }
         }
         .animate-pulse-glow {
             animation: pulseGlow 2s infinite ease-in-out;
@@ -95,104 +80,241 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased selection:bg-cyan-500 selection:text-black">
+<body>
 
-    <!-- ===================================================================== -->
-    <!-- 1. HEADER & ROLE SELECTOR NAVIGATION -->
-    <!-- ===================================================================== -->
-    <header class="w-full glass-panel border-b border-cyberBorder px-6 py-4 sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <!-- Brand & Progress Tracker -->
-            <div class="flex items-center gap-4">
-                <div class="relative flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-cyan-500/20 via-indigo-500/20 to-violet-500/30 border border-cyan-500/30 shadow-neon-cyan">
-                    <i data-lucide="cpu" class="w-6 h-6 text-neonCyan"></i>
-                    <span class="absolute -top-1 -right-1 flex h-3 w-3">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-3 w-3 bg-cyan-500"></span>
-                    </span>
+    <div class="app-container">
+        <!-- Fixed Left Sidebar -->
+        <aside class="app-sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="sidebar-brand-link" title="Open Main Landing Page">
+                    <div class="brand-logo-icon">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <div class="brand-info">
+                        <span class="brand-title">Dron AI</span>
+                        <span class="brand-subtitle">CAREER INTELLIGENCE</span>
+                    </div>
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <!-- Group 1: OVERVIEW -->
+                <div class="nav-section-title">
+                    <i class="fa-solid fa-shapes section-icon"></i>
+                    <span>OVERVIEW</span>
+                </div>
+                <div class="nav-group-card">
+                    <a href="dashboard.html" class="nav-item" data-page="dashboard">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-chart-simple"></i>
+                        </div>
+                        <span class="nav-item-title">Dashboard</span>
+                    </a>
                 </div>
 
-                <div>
-                    <div class="flex items-center gap-2">
-                        <h1 class="text-xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-                            Dron AI <span class="text-[11px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono">NeuroMock v2.4</span>
-                        </h1>
-                    </div>
-                    <div class="flex items-center gap-2 mt-0.5">
-                        <span id="roundTrackerText" class="text-xs font-mono text-emerald-600 font-semibold tracking-wide">
-                            Round 2 of 4
-                        </span>
-                        <span class="text-slate-300">•</span>
-<<<<<<< HEAD
-                        <span id="roundSubcategoryText" class="text-xs text-slate-600 truncate max-w-xs">
-=======
-                        <span id="roundSubcategoryText" class="text-xs text-slate-500 truncate max-w-xs">
->>>>>>> fab951bc754cde86a5a30f07907f0cb335ca4e50
-                            System Design & Distributed Scalability
-                        </span>
+                <!-- Group 2: PROFILE & ACADEMICS -->
+                <div class="nav-section-title">
+                    <i class="fa-solid fa-user section-icon"></i>
+                    <span>PROFILE &amp; ACADEMICS</span>
+                </div>
+                <div class="nav-group-card">
+                    <a href="input.html" class="nav-item" data-page="profile">
+                        <div class="nav-item-icon">
+                            <i class="fa-regular fa-user"></i>
+                        </div>
+                        <span class="nav-item-title">Student Profile</span>
+                    </a>
+                    <a href="academic.html" class="nav-item" data-page="academic">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                        </div>
+                        <span class="nav-item-title">Academic Records</span>
+                    </a>
+                    <a href="input.html#skills" class="nav-item" data-page="skills-connections">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-link"></i>
+                        </div>
+                        <span class="nav-item-title">Skills &amp; Connections</span>
+                    </a>
+                </div>
+
+                <!-- Group 3: CAREER INTELLIGENCE -->
+                <div class="nav-section-title">
+                    <i class="fa-solid fa-robot section-icon"></i>
+                    <span>CAREER INTELLIGENCE</span>
+                </div>
+                <div class="nav-group-card">
+                    <a href="academic.html#prediction" class="nav-item" data-page="academic-prediction">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                        <span class="nav-item-title">Academic Prediction</span>
+                    </a>
+                    <a href="placement.html" class="nav-item" data-page="placement">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
+                        <span class="nav-item-title">Placement Readiness</span>
+                    </a>
+                    <a href="career.html" class="nav-item" data-page="career">
+                        <div class="nav-item-icon">
+                            <i class="fa-regular fa-compass"></i>
+                        </div>
+                        <span class="nav-item-title">Career Recommendations</span>
+                    </a>
+                    <a href="roadmap.html#tab-gap" class="nav-item" data-page="skill-gap">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-sliders"></i>
+                        </div>
+                        <span class="nav-item-title">Skill Gap Analysis</span>
+                    </a>
+                    <a href="roadmap.html" class="nav-item" data-page="roadmap">
+                        <div class="nav-item-icon">
+                            <i class="fa-regular fa-map"></i>
+                        </div>
+                        <span class="nav-item-title">Personalized Roadmap</span>
+                    </a>
+                </div>
+
+                <!-- Group 4: INTERVIEW & DEVELOPMENT -->
+                <div class="nav-section-title">
+                    <i class="fa-solid fa-calendar-check section-icon"></i>
+                    <span>INTERVIEW &amp; DEVELOPMENT</span>
+                </div>
+                <div class="nav-group-card">
+                    <a href="mock_interview.html" class="nav-item active" data-page="mock-interview">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-microphone"></i>
+                        </div>
+                        <span class="nav-item-title">AI Mock Interview</span>
+                    </a>
+                    <a href="interview.html" class="nav-item" data-page="interview">
+                        <div class="nav-item-icon">
+                            <i class="fa-regular fa-message"></i>
+                        </div>
+                        <span class="nav-item-title">Interview Guide &amp; Q&amp;A</span>
+                    </a>
+                    <a href="mock_interview.html#history" class="nav-item" data-page="interview-feedback">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-clipboard-check"></i>
+                        </div>
+                        <span class="nav-item-title">Interview Feedback</span>
+                    </a>
+                    <a href="softskills.html" class="nav-item" data-page="soft-skills">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-user-group"></i>
+                        </div>
+                        <span class="nav-item-title">Soft Skills &amp; Pitch</span>
+                    </a>
+                </div>
+
+                <!-- Group 5: SUPPORT -->
+                <div class="nav-section-title">
+                    <i class="fa-solid fa-users section-icon"></i>
+                    <span>SUPPORT</span>
+                </div>
+                <div class="nav-group-card">
+                    <a href="roadmap.html#tab-checkin" class="nav-item" data-page="mentorship">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-user-group"></i>
+                        </div>
+                        <span class="nav-item-title">Mentorship Hub</span>
+                    </a>
+                    <a href="settings.html" class="nav-item" data-page="settings">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-gear"></i>
+                        </div>
+                        <span class="nav-item-title">Settings &amp; Help</span>
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-mini-card">
+                    <div class="user-avatar" id="sidebar-user-avatar">RJ</div>
+                    <div class="user-details">
+                        <div class="user-name" id="sidebar-user-name">Rohan Jha</div>
+                        <div class="user-meta" id="sidebar-user-meta">Semester 6 &bull; 2026</div>
                     </div>
                 </div>
             </div>
+        </aside>
 
-            <!-- Header Controls: Role Selector, Difficulty Toggle, Analytics Drawer Trigger -->
-            <div class="flex flex-wrap items-center gap-3">
-                <!-- Target Role Dropdown -->
-                <div class="relative">
-                    <label for="roleSelector" class="sr-only">Target Role</label>
-                    <select id="roleSelector" class="bg-white text-slate-800 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-medium focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all cursor-pointer shadow-sm">
-                        <option value="Fullstack Engineer">Fullstack Engineer</option>
-                        <option value="AI/ML Engineer">AI/ML Engineer</option>
-                        <option value="Product Manager">Product Manager</option>
-                        <option value="DevOps/SRE">DevOps / SRE</option>
-                        <option value="Distributed Systems Architect">Distributed Systems Architect</option>
-                    </select>
+        <!-- Main Workspace -->
+        <main class="app-main">
+            <!-- Platform Header Bar -->
+            <header class="app-header">
+                <div class="header-left">
+                    <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle navigation">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div class="header-greeting">
+                        <h1 class="greeting-title">AI Mock Interview <span>Simulator</span> 🎙️</h1>
+                    </div>
                 </div>
 
-                <!-- Difficulty Segmented Toggle -->
-                <div id="difficultyContainer" class="flex items-center bg-slate-100 border border-slate-200 rounded-lg p-0.5">
-                    <button data-diff="Junior" class="diff-btn px-2.5 py-1 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900 transition-all">Junior</button>
-                    <button data-diff="Mid-Level" class="diff-btn px-2.5 py-1 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900 transition-all">Mid-Level</button>
-<<<<<<< HEAD
-                    <button data-diff="Senior" class="diff-btn px-2.5 py-1 text-xs font-medium rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm font-semibold transition-all">Senior</button>
-=======
-                    <button data-diff="Senior" class="diff-btn px-2.5 py-1 text-xs font-medium rounded-md bg-white text-emerald-700 border border-slate-200 shadow-sm font-semibold transition-all">Senior</button>
->>>>>>> fab951bc754cde86a5a30f07907f0cb335ca4e50
-                    <button data-diff="FAANG-level" class="diff-btn px-2.5 py-1 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900 transition-all">FAANG-level</button>
+                <div class="header-right">
+                    <div class="header-badges">
+                        <div class="engine-live-pill checking" id="system-status-pill" title="Checking AI Engine status...">
+                            <span class="status-indicator-dot" id="system-status-dot"></span>
+                            <span class="status-indicator-text" id="system-status-text">CHECKING...</span>
+                        </div>
+                        <span class="badge" style="background: #ECFDF5; color: #16A34A; border: 1px solid #86EFAC;">
+                            <span id="roundTrackerText">Round 2 of 4</span>
+                        </span>
+                    </div>
+
+                    <!-- Past Sessions Button -->
+                    <button id="openHistoryBtn" class="btn btn-outline btn-small" type="button">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        <span>Past Sessions</span>
+                    </button>
+
+                    <!-- Return to Interview Hub -->
+                    <a href="interview.html" class="btn btn-outline btn-small">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>Q&amp;A Hub</span>
+                    </a>
+                </div>
+            </header>
+
+            <!-- App Workspace Content -->
+            <div class="app-content" style="max-width: 1400px; margin: 0 auto;">
+                
+                <!-- Controls Ribbon: Role Selector & Difficulty Toggles -->
+                <div class="glass-panel rounded-2xl p-4 mb-6 flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Role:</span>
+                            <select id="roleSelector" class="bg-white text-slate-800 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-medium focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 cursor-pointer shadow-sm">
+                                <option value="Fullstack Engineer">Fullstack Engineer</option>
+                                <option value="AI/ML Engineer">AI/ML Engineer</option>
+                                <option value="Product Manager">Product Manager</option>
+                                <option value="DevOps/SRE">DevOps / SRE</option>
+                                <option value="Distributed Systems Architect">Distributed Systems Architect</option>
+                            </select>
+                        </div>
+
+                        <div class="h-4 w-[1px] bg-slate-200 hidden sm:block"></div>
+
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Difficulty:</span>
+                            <div id="difficultyContainer" class="flex items-center bg-slate-100 border border-slate-200 rounded-lg p-0.5">
+                                <button data-diff="Junior" class="diff-btn px-2.5 py-1 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900 transition-all">Junior</button>
+                                <button data-diff="Mid-Level" class="diff-btn px-2.5 py-1 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900 transition-all">Mid-Level</button>
+                                <button data-diff="Senior" class="diff-btn px-2.5 py-1 text-xs font-medium rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm font-semibold transition-all">Senior</button>
+                                <button data-diff="FAANG-level" class="diff-btn px-2.5 py-1 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900 transition-all">FAANG-level</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 text-xs text-slate-500">
+                        <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span id="roundSubcategoryText" class="font-medium text-slate-700">System Design &amp; Distributed Scalability</span>
+                    </div>
                 </div>
 
-                <!-- Performance Analytics & History Button -->
-                <button id="openHistoryBtn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-xs font-medium text-slate-700 hover:text-emerald-700 transition-all shadow-sm">
-                    <i data-lucide="history" class="w-3.5 h-3.5 text-emerald-600"></i>
-                    <span>Past Sessions</span>
-                </button>
-
-                <!-- Return to Interview Hub -->
-                <a href="interview.html" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-xs font-medium text-emerald-700 transition-all shadow-sm">
-                    <i data-lucide="arrow-left" class="w-3.5 h-3.5 text-emerald-600"></i>
-                    <span>Q&amp;A Hub</span>
-                </a>
-
-<<<<<<< HEAD
-                <a href="dashboard.html" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-xs font-medium text-slate-700 hover:text-slate-900 transition-all shadow-sm">
-=======
-                <a href="dashboard.html" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-xs font-medium text-slate-700 transition-all shadow-sm">
->>>>>>> fab951bc754cde86a5a30f07907f0cb335ca4e50
-                    <i data-lucide="layout-dashboard" class="w-3.5 h-3.5 text-slate-500"></i>
-                    <span>Dashboard</span>
-                </a>
-            </div>
-        </div>
-    </header>
-
-    <!-- ===================================================================== -->
-    <!-- MAIN SIMULATOR WORKSPACE -->
-    <!-- ===================================================================== -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-8 space-y-8">
-
-        <!-- ================================================================= -->
-        <!-- 2. LIVE INTERVIEW SIMULATOR CARD -->
-        <!-- ================================================================= -->
-        <section class="space-y-6">
+                <section class="space-y-6">
 
             <!-- A. Question Display Banner -->
             <div class="w-full glass-panel rounded-2xl p-6 shadow-glass-card relative overflow-hidden">
@@ -236,15 +358,9 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-4 border-t border-slate-200">
                     <!-- Persona Accordion -->
                     <div class="glass-panel-subtle rounded-xl p-3.5 transition-all">
-<<<<<<< HEAD
                         <button id="togglePersonaBtn" class="w-full flex items-center justify-between text-left text-xs font-semibold text-amber-700 hover:text-amber-800">
                             <div class="flex items-center gap-2">
                                 <i data-lucide="user-check" class="w-4 h-4 text-amber-600"></i>
-=======
-                        <button id="togglePersonaBtn" class="w-full flex items-center justify-between text-left text-xs font-semibold text-violet-300 hover:text-violet-200">
-                            <div class="flex items-center gap-2">
-                                <i data-lucide="user-check" class="w-4 h-4 text-neonViolet"></i>
->>>>>>> fab951bc754cde86a5a30f07907f0cb335ca4e50
                                 <span id="personaNameLabel">Interviewer Persona: Dr. Aris Thorne</span>
                             </div>
                             <span id="personaArrow" class="text-slate-500 text-xs font-mono">View ▾</span>
@@ -254,15 +370,9 @@
                             <p id="personaTitle" class="text-slate-500 italic">Principal Distributed Systems Architect @ HyperScale</p>
                             <p id="personaExpectations" class="leading-relaxed text-slate-700">Looking for end-to-end depth: client state representation, transport framing, memory bounds on document state vectors, and graceful fallback when clients disconnect unexpectedly.</p>
                             <div id="personaFocusTags" class="flex flex-wrap gap-1.5 pt-1">
-<<<<<<< HEAD
                                 <span class="px-2 py-0.5 bg-amber-50 text-amber-800 rounded border border-amber-200 text-[10px] font-medium">CRDT vs OT</span>
                                 <span class="px-2 py-0.5 bg-amber-50 text-amber-800 rounded border border-amber-200 text-[10px] font-medium">WebSocket Fanout</span>
                                 <span class="px-2 py-0.5 bg-amber-50 text-amber-800 rounded border border-amber-200 text-[10px] font-medium">Vector Clocks</span>
-=======
-                                <span class="px-2 py-0.5 bg-violet-500/15 text-violet-300 rounded border border-violet-500/25 text-[10px]">CRDT vs OT</span>
-                                <span class="px-2 py-0.5 bg-violet-500/15 text-violet-300 rounded border border-violet-500/25 text-[10px]">WebSocket Fanout</span>
-                                <span class="px-2 py-0.5 bg-violet-500/15 text-violet-300 rounded border border-violet-500/25 text-[10px]">Vector Clocks</span>
->>>>>>> fab951bc754cde86a5a30f07907f0cb335ca4e50
                             </div>
                         </div>
                     </div>
@@ -291,7 +401,6 @@
                 <!-- Studio Header Bar -->
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
                     <!-- Tabbed Input Toggle -->
-<<<<<<< HEAD
                     <div class="flex items-center gap-2 bg-slate-100 p-1 rounded-xl border border-slate-200">
                         <button id="tabVoiceBtn" class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-slate-900 border border-slate-200 shadow-sm transition-all">
                             <span><i class="fa-solid fa-microphone"></i>  Voice Mode</span>
@@ -299,15 +408,6 @@
                         </button>
                         <button id="tabWrittenBtn" class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all">
                             <span><i class="fa-solid fa-keyboard"></i>  Written Response</span>
-=======
-                    <div class="flex items-center gap-2 bg-slate-900/80 p-1 rounded-xl border border-indigo-500/20">
-                        <button id="tabVoiceBtn" class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-neon-cyan transition-all">
-                            <span>🎙️ Voice Mode</span>
-                            <span id="voiceActivePing" class="hidden w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                        </button>
-                        <button id="tabWrittenBtn" class="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition-all">
-                            <span>⌨️ Written Response</span>
->>>>>>> fab951bc754cde86a5a30f07907f0cb335ca4e50
                         </button>
                     </div>
 
@@ -363,13 +463,8 @@
                     <!-- Right: Simulated Video PIP & AI Telemetry Badges (4 cols) -->
                     <div class="lg:col-span-4 flex flex-col justify-between glass-panel-subtle rounded-xl p-4 relative overflow-hidden">
                         <div class="flex items-center justify-between mb-3">
-<<<<<<< HEAD
                             <span class="text-xs font-semibold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
                                 <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-=======
-                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
->>>>>>> fab951bc754cde86a5a30f07907f0cb335ca4e50
                                 Vision Telemetry
                             </span>
                             <button id="cameraToggleBtn" class="text-[11px] font-mono text-emerald-600 hover:text-emerald-700 underline font-medium">
@@ -384,25 +479,15 @@
 
                             <!-- Cyber Avatar Fallback -->
                             <div id="cyberAvatarFallback" class="flex flex-col items-center justify-center p-2 text-center">
-<<<<<<< HEAD
                                 <div class="w-14 h-14 rounded-full bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center mb-1">
                                     <i data-lucide="user" class="w-7 h-7 text-emerald-600"></i>
-=======
-                                <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-cyan-500/30 via-violet-500/30 to-indigo-600/30 border border-cyan-400/40 flex items-center justify-center mb-1">
-                                    <i data-lucide="user" class="w-7 h-7 text-cyan-300"></i>
->>>>>>> fab951bc754cde86a5a30f07907f0cb335ca4e50
                                 </div>
                                 <span class="text-[10px] text-slate-400 font-mono">Neural PIP Avatar</span>
                             </div>
 
                             <!-- Neural Face Mesh Indicator Overlay -->
-<<<<<<< HEAD
                             <div class="absolute top-2 left-2 px-2 py-0.5 rounded bg-slate-900/90 border border-slate-700 text-[10px] font-mono text-emerald-400 flex items-center gap-1">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-=======
-                            <div class="absolute top-2 left-2 px-2 py-0.5 rounded bg-slate-900/80 border border-slate-700 text-[10px] font-mono text-cyan-300 flex items-center gap-1">
-                                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
->>>>>>> fab951bc754cde86a5a30f07907f0cb335ca4e50
                                 Face Mesh: Locked
                             </div>
                         </div>
@@ -422,15 +507,9 @@
                                 <div id="telemetryLighting" class="text-xs font-bold text-emerald-600">Optimal (48kHz)</div>
                             </div>
 
-<<<<<<< HEAD
                             <div class="bg-white p-2 rounded-lg border border-slate-200 shadow-sm">
                                 <div class="text-[10px] text-slate-500 font-mono">Speech Pacing</div>
                                 <div id="telemetryPacing" class="text-xs font-bold text-amber-600">135 WPM</div>
-=======
-                            <div class="bg-slate-900/70 p-2 rounded-lg border border-slate-800">
-                                <div class="text-[10px] text-slate-400 font-mono">Speech Pacing</div>
-                                <div id="telemetryPacing" class="text-xs font-bold text-violet-300">135 WPM</div>
->>>>>>> fab951bc754cde86a5a30f07907f0cb335ca4e50
                             </div>
 
                             <div class="bg-white p-2 rounded-lg border border-slate-200 shadow-sm">
@@ -450,22 +529,13 @@
                         <button id="redoBtn" class="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-medium transition-all shadow-sm">
                             Redo
                         </button>
-<<<<<<< HEAD
                         <button id="skipBtn" class="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-medium transition-all shadow-sm">
                             Skip Question &rarr;
-=======
-                        <button id="skipBtn" class="px-3.5 py-2 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-300 border border-slate-700/60 text-xs font-medium transition-all">
-                            Skip Question ➔
->>>>>>> fab951bc754cde86a5a30f07907f0cb335ca4e50
                         </button>
                     </div>
 
                     <!-- Submit Button with Neural Loading State -->
-<<<<<<< HEAD
                     <button id="submitEvaluationBtn" class="flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm transition-all">
-=======
-                    <button id="submitEvaluationBtn" class="flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-cyan-500 via-indigo-600 to-violet-600 hover:from-cyan-400 hover:to-violet-500 text-white shadow-neon-violet transition-all">
->>>>>>> fab951bc754cde86a5a30f07907f0cb335ca4e50
                         <i data-lucide="sparkles" class="w-4 h-4"></i>
                         <span id="submitBtnLabel">Submit for AI Evaluation</span>
                     </button>
@@ -482,11 +552,7 @@
                 <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 pb-6 border-b border-slate-200">
                     <div class="space-y-2 max-w-2xl">
                         <div class="flex items-center gap-2">
-<<<<<<< HEAD
                             <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-amber-50 text-amber-800 border border-amber-200">
-=======
-                            <span class="px-3 py-1 rounded-md text-xs font-mono font-bold bg-violet-500/20 text-violet-300 border border-violet-500/40">
->>>>>>> fab951bc754cde86a5a30f07907f0cb335ca4e50
                                 AI Evaluation Report
                             </span>
                             <span id="evalTimestamp" class="text-xs text-slate-500 font-mono">Just Now</span>
@@ -516,11 +582,7 @@
                                     <span class="text-[10px] uppercase font-mono tracking-widest text-slate-500 mt-0.5">Readiness</span>
                                 </div>
                             </div>
-<<<<<<< HEAD
                             <div id="gaugeGradeBadge" class="mt-4 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-emerald-50 border border-emerald-200 text-emerald-700 shadow-sm">
-=======
-                            <div id="gaugeGradeBadge" class="mt-4 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-slate-900 border border-emerald-500/30 text-emerald-400 shadow-neon-cyan">
->>>>>>> fab951bc754cde86a5a30f07907f0cb335ca4e50
                                 Strong Hire
                             </div>
                         </div>
@@ -543,13 +605,8 @@
                                     <span id="mScore1">9.4</span> <span class="text-slate-400">/ 10</span>
                                 </span>
                             </div>
-<<<<<<< HEAD
                             <div class="w-full h-2 rounded-md bg-slate-100 overflow-hidden mb-2">
                                 <div id="mBar1" class="h-full rounded-md bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-1000" style="width: 94%;"></div>
-=======
-                            <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden mb-2">
-                                <div id="mBar1" class="h-full rounded-full bg-gradient-to-r from-cyan-500 to-violet-500 transition-all duration-1000" style="width: 94%;"></div>
->>>>>>> fab951bc754cde86a5a30f07907f0cb335ca4e50
                             </div>
                             <p id="mDesc1" class="text-[11px] text-slate-600 leading-snug">Flawless distributed concurrency modeling with Redis Lua scripts and local proxy caches.</p>
                         </div>
@@ -562,13 +619,8 @@
                                     <span id="mScore2">8.8</span> <span class="text-slate-400">/ 10</span>
                                 </span>
                             </div>
-<<<<<<< HEAD
                             <div class="w-full h-2 rounded-md bg-slate-100 overflow-hidden mb-2">
                                 <div id="mBar2" class="h-full rounded-md bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-1000" style="width: 88%;"></div>
-=======
-                            <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden mb-2">
-                                <div id="mBar2" class="h-full rounded-full bg-gradient-to-r from-cyan-500 to-violet-500 transition-all duration-1000" style="width: 88%;"></div>
->>>>>>> fab951bc754cde86a5a30f07907f0cb335ca4e50
                             </div>
                             <p id="mDesc2" class="text-[11px] text-slate-600 leading-snug">Clear architectural progression from single instance to clustered Envoy proxies.</p>
                         </div>
@@ -581,13 +633,8 @@
                                     <span id="mScore3">9.2</span> <span class="text-slate-400">/ 10</span>
                                 </span>
                             </div>
-<<<<<<< HEAD
                             <div class="w-full h-2 rounded-md bg-slate-100 overflow-hidden mb-2">
                                 <div id="mBar3" class="h-full rounded-md bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-1000" style="width: 92%;"></div>
-=======
-                            <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden mb-2">
-                                <div id="mBar3" class="h-full rounded-full bg-gradient-to-r from-cyan-500 to-violet-500 transition-all duration-1000" style="width: 92%;"></div>
->>>>>>> fab951bc754cde86a5a30f07907f0cb335ca4e50
                             </div>
                             <p id="mDesc3" class="text-[11px] text-slate-600 leading-snug">Steady pacing (138 WPM), sustained eye contact, and negligible filler words.</p>
                         </div>
@@ -600,13 +647,8 @@
                                     <span id="mScore4">9.0</span> <span class="text-slate-400">/ 10</span>
                                 </span>
                             </div>
-<<<<<<< HEAD
                             <div class="w-full h-2 rounded-md bg-slate-100 overflow-hidden mb-2">
                                 <div id="mBar4" class="h-full rounded-md bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-1000" style="width: 90%;"></div>
-=======
-                            <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden mb-2">
-                                <div id="mBar4" class="h-full rounded-full bg-gradient-to-r from-cyan-500 to-violet-500 transition-all duration-1000" style="width: 90%;"></div>
->>>>>>> fab951bc754cde86a5a30f07907f0cb335ca4e50
                             </div>
                             <p id="mDesc4" class="text-[11px] text-slate-600 leading-snug">Concluded cleanly in 2m 44s, leaving sufficient margin for follow-up cross-examination.</p>
                         </div>
@@ -624,7 +666,6 @@
                             </h5>
                         </div>
                         <ul id="keyStrengthsList" class="space-y-2">
-<<<<<<< HEAD
                             <li class="flex items-start gap-2.5 text-xs text-slate-700">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0"></span>
                                 <span>Atomic execution via Redis Lua scripts effectively prevented distributed race conditions.</span>
@@ -635,18 +676,6 @@
                             </li>
                             <li class="flex items-start gap-2.5 text-xs text-slate-700">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0"></span>
-=======
-                            <li class="flex items-start gap-2.5 text-xs text-slate-300">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 shrink-0"></span>
-                                <span>Atomic execution via Redis Lua scripts effectively prevented distributed race conditions.</span>
-                            </li>
-                            <li class="flex items-start gap-2.5 text-xs text-slate-300">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 shrink-0"></span>
-                                <span>Proactively factored in local proxy caching to safeguard the central Redis cluster against hot-key bottlenecks.</span>
-                            </li>
-                            <li class="flex items-start gap-2.5 text-xs text-slate-300">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 shrink-0"></span>
->>>>>>> fab951bc754cde86a5a30f07907f0cb335ca4e50
                                 <span>Clearly distinguished between client-side throttling (HTTP 429 Retry-After) and server-side traffic shedding.</span>
                             </li>
                         </ul>
@@ -661,21 +690,12 @@
                             </h5>
                         </div>
                         <ul id="criticalGapsList" class="space-y-2">
-<<<<<<< HEAD
                             <li class="flex items-start gap-2.5 text-xs text-slate-700">
                                 <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mt-1.5 shrink-0"></span>
                                 <span>Did not explicitly address NTP clock drift issues across distributed nodes when calculating sliding timestamps.</span>
                             </li>
                             <li class="flex items-start gap-2.5 text-xs text-slate-700">
                                 <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mt-1.5 shrink-0"></span>
-=======
-                            <li class="flex items-start gap-2.5 text-xs text-slate-300">
-                                <span class="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 shrink-0"></span>
-                                <span>Did not explicitly address NTP clock drift issues across distributed nodes when calculating sliding timestamps.</span>
-                            </li>
-                            <li class="flex items-start gap-2.5 text-xs text-slate-300">
-                                <span class="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 shrink-0"></span>
->>>>>>> fab951bc754cde86a5a30f07907f0cb335ca4e50
                                 <span>Could further clarify fail-open versus fail-closed policy if the Redis caching tier undergoes split-brain partitioning.</span>
                             </li>
                         </ul>
@@ -686,21 +706,12 @@
                 <div class="glass-panel-subtle rounded-xl p-4 border border-slate-200 transition-all">
                     <button id="toggleSampleAnswerBtn" class="w-full flex items-center justify-between text-left">
                         <div class="flex items-center gap-2.5">
-<<<<<<< HEAD
                             <div class="w-7 h-7 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600">
                                 <span class="text-xs"><i class="fa-solid fa-award"></i> </span>
                             </div>
                             <div>
                                 <h5 class="text-sm font-bold text-slate-900 flex items-center gap-2">
                                     "How to Answer Better"  -  Gold Standard Model Answer
-=======
-                            <div class="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
-                                <span class="text-xs">🏆</span>
-                            </div>
-                            <div>
-                                <h5 class="text-sm font-bold text-white flex items-center gap-2">
-                                    "How to Answer Better" — Gold Standard Model Answer
->>>>>>> fab951bc754cde86a5a30f07907f0cb335ca4e50
                                 </h5>
                                 <p class="text-[11px] text-slate-500">Curated Staff-level benchmark with phase breakdown</p>
                             </div>
@@ -715,41 +726,23 @@
 
                         <!-- Breakdown Phases -->
                         <div id="goldAnswerBreakdown" class="grid grid-cols-1 md:grid-cols-3 gap-3">
-<<<<<<< HEAD
                             <div class="bg-white rounded-lg p-3 border border-slate-200 shadow-sm">
                                 <div class="text-xs font-semibold text-amber-700 mb-1.5">1. Requirements & Scoping</div>
                                 <ul class="text-[11px] text-slate-600 space-y-1 list-disc list-inside">
-=======
-                            <div class="bg-slate-900/80 rounded-lg p-3 border border-slate-800">
-                                <div class="text-xs font-semibold text-violet-300 mb-1.5">1. Requirements & Scoping</div>
-                                <ul class="text-[11px] text-slate-300 space-y-1 list-disc list-inside">
->>>>>>> fab951bc754cde86a5a30f07907f0cb335ca4e50
                                     <li>100k peak QPS, 5ms SLA budget</li>
                                     <li>Sliding window precision guarantees</li>
                                 </ul>
                             </div>
-<<<<<<< HEAD
                             <div class="bg-white rounded-lg p-3 border border-slate-200 shadow-sm">
                                 <div class="text-xs font-semibold text-amber-700 mb-1.5">2. Algorithmic Choice</div>
                                 <ul class="text-[11px] text-slate-600 space-y-1 list-disc list-inside">
-=======
-                            <div class="bg-slate-900/80 rounded-lg p-3 border border-slate-800">
-                                <div class="text-xs font-semibold text-violet-300 mb-1.5">2. Algorithmic Choice</div>
-                                <ul class="text-[11px] text-slate-300 space-y-1 list-disc list-inside">
->>>>>>> fab951bc754cde86a5a30f07907f0cb335ca4e50
                                     <li>Sliding Window Counter in Redis Sorted Sets</li>
                                     <li>Atomic Lua execution to prevent race conditions</li>
                                 </ul>
                             </div>
-<<<<<<< HEAD
                             <div class="bg-white rounded-lg p-3 border border-slate-200 shadow-sm">
                                 <div class="text-xs font-semibold text-amber-700 mb-1.5">3. Reliability & Faults</div>
                                 <ul class="text-[11px] text-slate-600 space-y-1 list-disc list-inside">
-=======
-                            <div class="bg-slate-900/80 rounded-lg p-3 border border-slate-800">
-                                <div class="text-xs font-semibold text-violet-300 mb-1.5">3. Reliability & Faults</div>
-                                <ul class="text-[11px] text-slate-300 space-y-1 list-disc list-inside">
->>>>>>> fab951bc754cde86a5a30f07907f0cb335ca4e50
                                     <li>Local Envoy in-memory token bucket</li>
                                     <li>Fail-open policy under network partitions</li>
                                 </ul>
@@ -764,9 +757,10 @@
                     </div>
                 </div>
             </div>
-        </section>
-
-    </main>
+                        </section>
+            </div><!-- /.app-content -->
+        </main><!-- /.app-main -->
+    </div><!-- /.app-container -->
 
     <!-- ===================================================================== -->
     <!-- 4. PERFORMANCE ANALYTICS & HISTORY DRAWER (SLIDE-OVER) -->
@@ -854,14 +848,42 @@
     <!-- ===================================================================== -->
     <!-- INTERACTIVE APP JAVASCRIPT LOGIC -->
     <!-- ===================================================================== -->
+    <!-- Main Platform Scripts -->
+    <script src="../js/app.js"></script>
+
     <script>
         // Initialize Lucide Icons
-        lucide.createIcons();
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+            window.lucide.createIcons();
+        }
 
         // ---------------------------------------------------------------------
         // Mock Questions Repository
         // ---------------------------------------------------------------------
         const MOCK_QUESTIONS = [
+            {
+                id: 'fullstack-junior-000',
+                role: 'Fullstack Engineer',
+                difficulty: 'Junior',
+                category: 'Data Structures & Algorithms',
+                roundTitle: 'Round 1 of 4: Core Fundamentals & Problem Solving',
+                roundIndex: 1,
+                totalRounds: 4,
+                title: 'Two Sum & In-Memory Hash Table Lookup Optimization',
+                scenario: 'Given an array of integers and a target sum, implement an optimal function to return the indices of the two numbers that add up to the target. Explain brute-force O(N^2) limitations and demonstrate how a Hash Map achieves O(N) time complexity with O(N) auxiliary space.',
+                interviewerPersona: {
+                    name: 'Alex Rivera',
+                    title: 'Lead Software Engineer @ CloudTech',
+                    focusAreas: ['Time Complexity', 'Hash Collision Handling', 'Edge Case Validation'],
+                    expectations: 'Demonstrate structured explanation: edge cases (null inputs, duplicate values), space-time tradeoffs, and readable variable naming.'
+                },
+                hints: [
+                    'Consider single-pass hash map insertion while checking for complement.',
+                    'Discuss what happens when duplicate elements exist in the input array.'
+                ],
+                expectedKeywords: ['Hash Map', 'O(N)', 'Complement', 'Lookup Time', 'Space Complexity'],
+                timeLimitSeconds: 180
+            },
             {
                 id: 'fullstack-senior-001',
                 role: 'Fullstack Engineer',
@@ -930,6 +952,29 @@
                     'Suggest localized inventory reservations with asynchronous settlement or optimistic reservation with reconciliation.'
                 ],
                 expectedKeywords: ['Active-Active', 'DynamoDB Global Tables', 'Anycast DNS', 'Idempotency', 'RPO/RTO'],
+                timeLimitSeconds: 180
+            },
+            {
+                id: 'dist-architect-004',
+                role: 'Distributed Systems Architect',
+                difficulty: 'Senior',
+                category: 'Distributed Systems',
+                roundTitle: 'Round 4 of 4: Global Consensus & Partition Tolerance',
+                roundIndex: 4,
+                totalRounds: 4,
+                title: 'Design a Globally Distributed Consensus Store with Raft Protocol',
+                scenario: 'Design a distributed key-value metadata store supporting linearizable reads and writes across 5 geographic zones. Walk through Raft leader election, log replication, handling network partitions (split-brain prevention), and lease-based read optimizations.',
+                interviewerPersona: {
+                    name: 'Elena Rostova',
+                    title: 'Principal Systems Architect @ CoreInfra',
+                    focusAreas: ['Raft Consensus', 'Linearizability', 'Quorum Math', 'Read Index / Leases'],
+                    expectations: 'Evaluate deep understanding of distributed consistency models, network partition survival, and hardware failure modes.'
+                },
+                hints: [
+                    'Explain why Raft requires a majority quorum (N/2 + 1) to commit log entries.',
+                    'Detail how leader leases prevent stale reads without running full consensus on read paths.'
+                ],
+                expectedKeywords: ['Raft', 'Quorum', 'Log Replication', 'Leader Election', 'Linearizable'],
                 timeLimitSeconds: 180
             },
             {
@@ -1124,6 +1169,47 @@
         // ---------------------------------------------------------------------
         // Render Active Question
         // ---------------------------------------------------------------------
+        function setActiveDifficulty(diff) {
+            if (!diff) return;
+            document.querySelectorAll('.diff-btn').forEach(b => {
+                if (b.getAttribute('data-diff').toLowerCase() === diff.toLowerCase()) {
+                    b.className = 'diff-btn px-2.5 py-1 text-xs font-medium rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm font-semibold transition-all';
+                } else {
+                    b.className = 'diff-btn px-2.5 py-1 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900 transition-all';
+                }
+            });
+            if (questionDifficultyPill) {
+                questionDifficultyPill.innerText = diff;
+            }
+        }
+
+        function getActiveDifficulty() {
+            const activeBtn = document.querySelector('.diff-btn.bg-emerald-50');
+            if (activeBtn) return activeBtn.getAttribute('data-diff');
+            return activeQuestion ? activeQuestion.difficulty : 'Senior';
+        }
+
+        function showNoQuestionsState(role, diff) {
+            activeQuestion = null;
+            roundTrackerText.innerText = 'Round 0 of 0';
+            roundSubcategoryText.innerText = 'No Questions Available';
+            questionCategoryPill.innerText = 'No Match';
+            questionDifficultyPill.innerText = diff || 'None';
+            questionRolePill.innerText = role || 'N/A';
+            questionTitle.innerText = 'No Questions Available';
+            questionScenario.innerText = `There are currently no interview questions available for ${role} at the ${diff} difficulty level. Please select a different role or difficulty.`;
+
+            personaNameLabel.innerText = 'Interviewer Persona: Unavailable';
+            personaTitle.innerText = 'N/A';
+            personaExpectations.innerText = 'No evaluation criteria available for this configuration.';
+            personaFocusTags.innerHTML = '<span class="px-2 py-0.5 bg-slate-100 text-slate-500 rounded border border-slate-200 text-[10px]">None</span>';
+
+            hintsCount.innerText = '0';
+            hintsList.innerHTML = '<li class="text-slate-400">No hints available for this selection.</li>';
+
+            resetStudio();
+        }
+
         function loadQuestion(q) {
             activeQuestion = q;
             roundTrackerText.innerText = `Round ${q.roundIndex} of ${q.totalRounds}`;
@@ -1139,16 +1225,18 @@
             personaTitle.innerText = q.interviewerPersona.title;
             personaExpectations.innerText = q.interviewerPersona.expectations;
             personaFocusTags.innerHTML = q.interviewerPersona.focusAreas
-<<<<<<< HEAD
                 .map(a => `<span class="px-2 py-0.5 bg-amber-50 text-amber-800 rounded border border-amber-200 text-[10px] font-medium">${a}</span>`)
-=======
-                .map(a => `<span class="px-2 py-0.5 bg-violet-500/15 text-violet-300 rounded border border-violet-500/25 text-[10px]">${a}</span>`)
->>>>>>> fab951bc754cde86a5a30f07907f0cb335ca4e50
                 .join('');
 
             // Hints
             hintsCount.innerText = q.hints.length;
             hintsList.innerHTML = q.hints.map(h => `<li>${h}</li>`).join('');
+
+            // Sync roleSelector and active difficulty button with loaded question
+            if (roleSelector && q.role && roleSelector.value !== q.role) {
+                roleSelector.value = q.role;
+            }
+            setActiveDifficulty(q.difficulty);
 
             // Reset Editor
             resetStudio();
@@ -1274,13 +1362,8 @@
 
         tabWrittenBtn.addEventListener('click', () => {
             inputMode = 'written';
-<<<<<<< HEAD
             tabWrittenBtn.className = 'flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-slate-900 border border-slate-200 shadow-sm transition-all';
             tabVoiceBtn.className = 'flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all';
-=======
-            tabWrittenBtn.className = 'flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-violet-500/20 text-violet-300 border border-violet-500/40 shadow-neon-violet transition-all';
-            tabVoiceBtn.className = 'flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition-all';
->>>>>>> fab951bc754cde86a5a30f07907f0cb335ca4e50
             writtenModeContainer.classList.remove('hidden');
             voiceModeContainer.classList.add('hidden');
         });
@@ -1324,6 +1407,10 @@
         // Text-to-Speech (TTS) Read Question
         // ---------------------------------------------------------------------
         readQuestionBtn.addEventListener('click', () => {
+            if (!activeQuestion) {
+                alert('No interview question is currently active.');
+                return;
+            }
             if (!('speechSynthesis' in window)) {
                 alert('Text-to-speech not supported in this browser.');
                 return;
@@ -1401,29 +1488,31 @@
         });
 
         roleSelector.addEventListener('change', (e) => {
-            const matched = MOCK_QUESTIONS.find(q => q.role === e.target.value);
-            if (matched) loadQuestion(matched);
+            const selectedRole = e.target.value;
+            const currentDiff = getActiveDifficulty();
+            const matched = MOCK_QUESTIONS.find(q => q.role === selectedRole && q.difficulty.toLowerCase() === currentDiff.toLowerCase());
+            if (matched) {
+                loadQuestion(matched);
+            } else {
+                showNoQuestionsState(selectedRole, currentDiff);
+            }
         });
 
         // Difficulty segmented buttons
         document.querySelectorAll('.diff-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const diff = btn.getAttribute('data-diff');
-                document.querySelectorAll('.diff-btn').forEach(b => {
-                    b.className = 'diff-btn px-2.5 py-1 text-xs font-medium rounded-md text-slate-600 hover:text-slate-900 transition-all';
-                });
-<<<<<<< HEAD
-                btn.className = 'diff-btn px-2.5 py-1 text-xs font-medium rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm font-semibold transition-all';
-=======
-                btn.className = 'diff-btn px-2.5 py-1 text-xs font-medium rounded-md bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-neon-cyan font-semibold transition-all';
->>>>>>> fab951bc754cde86a5a30f07907f0cb335ca4e50
-                questionDifficultyPill.innerText = diff;
-
+                const previousDiff = activeQuestion ? activeQuestion.difficulty : getActiveDifficulty();
                 const currentRole = roleSelector.value;
                 const matched = MOCK_QUESTIONS.find(q => q.role === currentRole && q.difficulty.toLowerCase() === diff.toLowerCase())
                     || MOCK_QUESTIONS.find(q => q.difficulty.toLowerCase() === diff.toLowerCase());
+
                 if (matched) {
+                    setActiveDifficulty(matched.difficulty);
                     loadQuestion(matched);
+                } else {
+                    setActiveDifficulty(previousDiff);
+                    alert(`No interview questions found for difficulty level "${diff}". Retaining ${previousDiff} question.`);
                 }
             });
         });
@@ -1449,11 +1538,7 @@
             const badge = document.getElementById('gaugeGradeBadge');
             if (badge) {
                 badge.innerText = grade;
-<<<<<<< HEAD
                 badge.className = `mt-4 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider border shadow-sm ${gradeColor}`;
-=======
-                badge.className = `mt-4 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-slate-900 border ${gradeColor}`;
->>>>>>> fab951bc754cde86a5a30f07907f0cb335ca4e50
             }
 
             // Update Dimensional Metric Bars
@@ -1477,6 +1562,10 @@
         // Submit for AI Evaluation (Simulated Pipeline)
         // ---------------------------------------------------------------------
         submitEvaluationBtn.addEventListener('click', () => {
+            if (!activeQuestion) {
+                alert('No interview question is currently active. Please select a valid question.');
+                return;
+            }
             stopTimer();
 
             // Loading state with cyber steps
@@ -1544,11 +1633,7 @@
                 // Reset button state
                 submitEvaluationBtn.disabled = false;
                 submitBtnLabel.innerText = 'Submit for AI Evaluation';
-<<<<<<< HEAD
                 submitEvaluationBtn.className = 'flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm transition-all';
-=======
-                submitEvaluationBtn.className = 'flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-cyan-500 via-indigo-600 to-violet-600 hover:from-cyan-400 hover:to-violet-500 text-white shadow-neon-violet transition-all';
->>>>>>> fab951bc754cde86a5a30f07907f0cb335ca4e50
 
                 // Scroll to evaluation panel
                 document.getElementById('evaluationPanel').scrollIntoView({ behavior: 'smooth' });
@@ -1569,7 +1654,8 @@
                 sessionHistory.unshift(newSess);
                 renderHistory();
             }, 1200);
-        });
+        }
+    });
 
         // ---------------------------------------------------------------------
         // History Drawer Management
@@ -1614,6 +1700,9 @@
 
         // Initialize default view
         loadQuestion(MOCK_QUESTIONS[0]);
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+            window.lucide.createIcons();
+        }
     </script>
 </body>
 </html>

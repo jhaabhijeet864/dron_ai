@@ -24,53 +24,141 @@
                     </div>
                     <div class="brand-info">
                         <span class="brand-title">Dron AI</span>
-                        <span class="brand-subtitle">Career Intelligence</span>
+                        <span class="brand-subtitle">CAREER INTELLIGENCE</span>
                     </div>
                 </a>
             </div>
 
             <nav class="sidebar-nav">
-                <div class="nav-section-title">Overview</div>
-                <a href="dashboard.html" class="nav-item active">
-                    <i class="fa-solid fa-chart-line"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="input.html" class="nav-item">
-                    <i class="fa-solid fa-id-card"></i>
-                    <span>Student Profile</span>
-                </a>
+                <!-- Group 1: OVERVIEW -->
+                <div class="nav-section-title">
+                    <i class="fa-solid fa-shapes section-icon"></i>
+                    <span>OVERVIEW</span>
+                </div>
+                <div class="nav-group-card">
+                    <a href="dashboard.html" class="nav-item active" data-page="dashboard">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-chart-simple"></i>
+                        </div>
+                        <span class="nav-item-title">Dashboard</span>
+                    </a>
+                </div>
 
-                <div class="nav-section-title">AI Engines</div>
-                <a href="career.html" class="nav-item">
-                    <i class="fa-solid fa-compass"></i>
-                    <span>Career Prediction</span>
-                </a>
-                <a href="placement.html" class="nav-item">
-                    <i class="fa-solid fa-bullseye"></i>
-                    <span>Placement Readiness</span>
-                </a>
-                <a href="softskills.html" class="nav-item">
-                    <i class="fa-solid fa-sliders"></i>
-                    <span>Skill Gap Analysis</span>
-                </a>
-                <a href="roadmap.html" class="nav-item">
-                    <i class="fa-solid fa-route"></i>
-                    <span>Learning Roadmap</span>
-                </a>
+                <!-- Group 2: PROFILE & ACADEMICS -->
+                <div class="nav-section-title">
+                    <i class="fa-solid fa-user section-icon"></i>
+                    <span>PROFILE &amp; ACADEMICS</span>
+                </div>
+                <div class="nav-group-card">
+                    <a href="input.html" class="nav-item" data-page="profile">
+                        <div class="nav-item-icon">
+                            <i class="fa-regular fa-user"></i>
+                        </div>
+                        <span class="nav-item-title">Student Profile</span>
+                    </a>
+                    <a href="academic.html" class="nav-item" data-page="academic">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-graduation-cap"></i>
+                        </div>
+                        <span class="nav-item-title">Academic Records</span>
+                    </a>
+                    <a href="input.html#skills" class="nav-item" data-page="skills-connections">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-link"></i>
+                        </div>
+                        <span class="nav-item-title">Skills &amp; Connections</span>
+                    </a>
+                </div>
 
-                <div class="nav-section-title">Interview Hub</div>
-                <a href="mock_interview.html" class="nav-item">
-                    <i class="fa-solid fa-microphone-lines"></i>
-                    <span>AI Mock Interview</span>
-                </a>
-                <a href="interview.html" class="nav-item">
-                    <i class="fa-solid fa-clipboard-check"></i>
-                    <span>Interview Feedback</span>
-                </a>
-                <a href="academic.html" class="nav-item">
-                    <i class="fa-solid fa-graduation-cap"></i>
-                    <span>Academic Performance</span>
-                </a>
+                <!-- Group 3: CAREER INTELLIGENCE -->
+                <div class="nav-section-title">
+                    <i class="fa-solid fa-robot section-icon"></i>
+                    <span>CAREER INTELLIGENCE</span>
+                </div>
+                <div class="nav-group-card">
+                    <a href="academic.html#prediction" class="nav-item" data-page="academic-prediction">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                        <span class="nav-item-title">Academic Prediction</span>
+                    </a>
+                    <a href="placement.html" class="nav-item" data-page="placement">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
+                        <span class="nav-item-title">Placement Readiness</span>
+                    </a>
+                    <a href="career.html" class="nav-item" data-page="career">
+                        <div class="nav-item-icon">
+                            <i class="fa-regular fa-compass"></i>
+                        </div>
+                        <span class="nav-item-title">Career Recommendations</span>
+                    </a>
+                    <a href="roadmap.html#tab-gap" class="nav-item" data-page="skill-gap">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-sliders"></i>
+                        </div>
+                        <span class="nav-item-title">Skill Gap Analysis</span>
+                    </a>
+                    <a href="roadmap.html" class="nav-item" data-page="roadmap">
+                        <div class="nav-item-icon">
+                            <i class="fa-regular fa-map"></i>
+                        </div>
+                        <span class="nav-item-title">Personalized Roadmap</span>
+                    </a>
+                </div>
+
+                <!-- Group 4: INTERVIEW & DEVELOPMENT -->
+                <div class="nav-section-title">
+                    <i class="fa-solid fa-calendar-check section-icon"></i>
+                    <span>INTERVIEW &amp; DEVELOPMENT</span>
+                </div>
+                <div class="nav-group-card">
+                    <a href="mock_interview.html" class="nav-item" data-page="mock-interview">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-microphone"></i>
+                        </div>
+                        <span class="nav-item-title">AI Mock Interview</span>
+                    </a>
+                    <a href="interview.html" class="nav-item" data-page="interview">
+                        <div class="nav-item-icon">
+                            <i class="fa-regular fa-message"></i>
+                        </div>
+                        <span class="nav-item-title">Interview Guide &amp; Q&amp;A</span>
+                    </a>
+                    <a href="mock_interview.html#history" class="nav-item" data-page="interview-feedback">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-clipboard-check"></i>
+                        </div>
+                        <span class="nav-item-title">Interview Feedback</span>
+                    </a>
+                    <a href="softskills.html" class="nav-item" data-page="soft-skills">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-user-group"></i>
+                        </div>
+                        <span class="nav-item-title">Soft Skills &amp; Pitch</span>
+                    </a>
+                </div>
+
+                <!-- Group 5: SUPPORT -->
+                <div class="nav-section-title">
+                    <i class="fa-solid fa-users section-icon"></i>
+                    <span>SUPPORT</span>
+                </div>
+                <div class="nav-group-card">
+                    <a href="roadmap.html#tab-checkin" class="nav-item" data-page="mentorship">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-user-group"></i>
+                        </div>
+                        <span class="nav-item-title">Mentorship Hub</span>
+                    </a>
+                    <a href="settings.html" class="nav-item" data-page="settings">
+                        <div class="nav-item-icon">
+                            <i class="fa-solid fa-gear"></i>
+                        </div>
+                        <span class="nav-item-title">Settings &amp; Help</span>
+                    </a>
+                </div>
             </nav>
 
             <div class="sidebar-footer">
@@ -78,7 +166,7 @@
                     <div class="user-avatar" id="sidebar-user-avatar">RJ</div>
                     <div class="user-details">
                         <div class="user-name" id="sidebar-user-name">Rohan Jha</div>
-                        <div class="user-meta" id="sidebar-user-meta">Sem 6 &bull; B.Tech CSE</div>
+                        <div class="user-meta" id="sidebar-user-meta">Semester 6 &bull; 2026</div>
                     </div>
                 </div>
             </div>
@@ -122,21 +210,21 @@
             <!-- Workspace Body -->
             <div class="app-content">
 
-                <!-- ── 3. Welcoming Hero Banner with Soft Mint Glow ──────── -->
-                <div class="dashboard-hero-banner" style="background: linear-gradient(135deg, #FFFFFF 0%, #DCFCE7 100%); border: 1px solid #86EFAC; border-radius: 20px; padding: 2rem 2.25rem; margin-bottom: 2rem; box-shadow: 0 4px 20px rgba(134, 239, 172, 0.25); display: flex; justify-content: space-between; align-items: center; gap: 2rem; flex-wrap: wrap;">
-                    <div style="max-width: 680px;">
-                        <div style="display: inline-flex; align-items: center; gap: 0.45rem; background: #FFFFFF; border: 1px solid #86EFAC; border-radius: 9999px; padding: 0.25rem 0.75rem; font-size: 0.75rem; font-weight: 600; color: #16A34A; margin-bottom: 0.75rem;">
+                <!-- ── 3. Welcoming Hero Banner (Clean Solid White SaaS Surface) ──────── -->
+                <div class="dashboard-hero-banner">
+                    <div class="hero-banner-content">
+                        <div class="hero-eyebrow">
                             <i class="fa-solid fa-sparkles"></i>
                             <span>AI Career Intelligence v3.2 &bull; Active Cohort</span>
                         </div>
-                        <h1 style="font-size: 2rem; font-weight: 800; color: #111827; letter-spacing: -0.03em; margin-bottom: 0.5rem; line-height: 1.2;">
+                        <h1 class="hero-banner-title">
                             Your Future, Powered by AI
                         </h1>
-                        <p style="font-size: 1rem; color: #475569; line-height: 1.5; margin-bottom: 0;">
+                        <p class="hero-banner-desc">
                             Understand your skills. Discover your career. Get placement-ready with continuous multi-dimensional academic telemetry.
                         </p>
                     </div>
-                    <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+                    <div class="hero-banner-actions">
                         <a href="career.html" class="btn btn-primary" style="box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);">
                             <i class="fa-solid fa-compass"></i>
                             <span>Explore Careers</span>
@@ -149,10 +237,10 @@
                 </div>
 
                 <!-- ── 4. Four Required Summary Cards ────────────────────── -->
-                <section class="kpi-ribbon-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 2rem;">
+                <section class="kpi-ribbon-grid">
                     <!-- 1. Career Readiness Score -->
                     <div class="kpi-card">
-                        <div class="kpi-icon-wrap" style="background: #ECFDF5; color: #16A34A; border: 1px solid #86EFAC;">
+                        <div class="kpi-icon-wrap kpi-icon-success">
                             <i class="fa-solid fa-gauge-high"></i>
                         </div>
                         <div class="kpi-data">
@@ -166,27 +254,27 @@
 
                     <!-- 2. Placement Probability Estimate -->
                     <div class="kpi-card">
-                        <div class="kpi-icon-wrap" style="background: #ECFDF5; color: #16A34A; border: 1px solid #86EFAC;">
+                        <div class="kpi-icon-wrap kpi-icon-cyan">
                             <i class="fa-solid fa-bullseye"></i>
                         </div>
                         <div class="kpi-data">
                             <span class="kpi-label">Placement Probability</span>
                             <span class="kpi-value" id="kpi-probability-val">74.2%</span>
                             <span class="kpi-subtext" style="color: #16A34A;">
-                                <i class="fa-solid fa-shield-check"></i> High Confidence (XGBoost)
+                                <i class="fa-solid fa-shield-halved"></i> High Confidence (XGBoost)
                             </span>
                         </div>
                     </div>
 
                     <!-- 3. Skills Match Percentage -->
                     <div class="kpi-card">
-                        <div class="kpi-icon-wrap" style="background: #ECFDF5; color: #16A34A; border: 1px solid #86EFAC;">
+                        <div class="kpi-icon-wrap kpi-icon-purple">
                             <i class="fa-solid fa-chart-pie"></i>
                         </div>
                         <div class="kpi-data">
                             <span class="kpi-label">Skills Match</span>
                             <span class="kpi-value" id="kpi-skills-match-val">88% Match</span>
-                            <span class="kpi-subtext" style="color: #64748B;">
+                            <span class="kpi-subtext">
                                 <i class="fa-solid fa-code"></i> Python &bull; DSA &bull; SQL
                             </span>
                         </div>
@@ -194,12 +282,12 @@
 
                     <!-- 4. Recommended Career Paths -->
                     <div class="kpi-card">
-                        <div class="kpi-icon-wrap" style="background: #ECFDF5; color: #16A34A; border: 1px solid #86EFAC;">
+                        <div class="kpi-icon-wrap kpi-icon-amber">
                             <i class="fa-solid fa-briefcase"></i>
                         </div>
                         <div class="kpi-data">
                             <span class="kpi-label">Top Recommended Role</span>
-                            <span class="kpi-value" style="font-size: 1.15rem; font-weight: 700;">Data Engineer</span>
+                            <span class="kpi-value" style="font-size: 1.25rem;">Data Engineer</span>
                             <span class="kpi-subtext" style="color: #16A34A;">
                                 <i class="fa-solid fa-sparkles"></i> 3 Matched Pathways
                             </span>
@@ -208,20 +296,20 @@
                 </section>
 
                 <!-- ── 5. AI Career Insights (Dark Contrast Card #111111) ── -->
-                <div class="card-dark-contrast" style="background: #111111; color: #FFFFFF; border: 1px solid #27272A; border-radius: 20px; padding: 1.75rem 2rem; margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); display: flex; align-items: center; justify-content: space-between; gap: 2rem; flex-wrap: wrap;">
+                <div class="card-dark-contrast">
                     <div style="flex: 1; min-width: 300px;">
-                        <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(34, 197, 94, 0.15); border: 1px solid #22C55E; color: #86EFAC; border-radius: 9999px; padding: 0.25rem 0.75rem; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.65rem;">
-                            <i class="fa-solid fa-microchip-ai"></i>
+                        <div class="dark-contrast-badge">
+                            <i class="fa-solid fa-brain"></i>
                             <span>AI Career Recommendations &bull; Executive Digest</span>
                         </div>
-                        <h3 style="font-size: 1.25rem; font-weight: 700; color: #FFFFFF; margin-bottom: 0.45rem;">
+                        <h3 class="dark-contrast-title">
                             Priority Recommendation: Solidify System Design &amp; Complete 1 Cloud Capstone
                         </h3>
-                        <p style="font-size: 0.88rem; color: #94A3B8; line-height: 1.6; margin-bottom: 0;">
+                        <p class="dark-contrast-desc">
                             Your 8.65 CGPA and 242+ LeetCode problems place you in the Tier-1 recruitment bracket. Closing the 12% gap in distributed systems fundamentals and conducting one mock technical interview will raise your predicted placement odds to <strong style="color: #86EFAC;">86%</strong>.
                         </p>
                     </div>
-                    <div style="display: flex; gap: 0.75rem;">
+                    <div class="dark-contrast-actions">
                         <a href="mock_interview.html" class="btn btn-primary" style="background: #22C55E; color: #FFFFFF; border: 1px solid #22C55E; font-weight: 700;">
                             <span>Run AI Mock Interview</span>
                             <i class="fa-solid fa-arrow-right"></i>
@@ -233,7 +321,7 @@
                 </div>
 
                 <!-- ── 6. Core 4-Card Analytical Grid ────────────────────── -->
-                <section class="dashboard-grid-2x2" style="margin-bottom: 2rem;">
+                <section class="dashboard-grid-2x2">
 
                     <!-- Card 1: Academic Performance & Trajectory -->
                     <div class="dash-card">
