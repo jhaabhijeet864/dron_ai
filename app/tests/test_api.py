@@ -530,6 +530,19 @@ class TestMetricsEndpoints:
         assert profile_body["platform_links"]["leetcode_username"] == "coder_student"
         assert profile_body["platform_links"]["last_synced"] is not None
 
+    def test_get_telemetry_endpoint(self, client, registered_user):
+        """GET /api/metrics/telemetry returns telemetry details."""
+        token = _get_jwt(client, registered_user["email"], registered_user["password"])
+        resp = client.get(
+            "/api/metrics/telemetry",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        assert resp.status_code == 200
+        body = resp.get_json()
+        assert "github_handle" in body
+        assert "leetcode_username" in body
+        assert "dsa_score" in body
+
 
 # ── Placeholder Tests (other feature areas) ───────────────────────────────────
 

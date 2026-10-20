@@ -44,6 +44,9 @@ class TestGitHubFetcher:
             assert stats["total_commits"] == 4
             assert "Python" in stats["languages"]
             assert "C++" in stats["languages"]
+            assert stats["total_stars"] == 0
+            assert stats["language_distribution"]["Python"] == 1
+            assert stats["language_distribution"]["C++"] == 1
 
     def test_fetch_nonexistent_user(self):
         """Test that fetching a non-existent user returns baseline defaults safely."""
@@ -123,6 +126,8 @@ class TestLeetCodeFetcher:
             assert stats["medium_solved"] == 120
             assert stats["hard_solved"] == 30
             assert stats["contest_rating"] == 1680.5
+            assert stats["ranking"] == 12000
+            assert stats["attended_contests"] == 8
 
     def test_fetch_nonexistent_user(self):
         """Test that fetching a non-existent LeetCode user returns safe baseline zeros."""

@@ -76,6 +76,15 @@ def fetch_and_update_metrics(
             "repos": github_stats.get("total_repos", 0),
             "languages": github_stats.get("languages", []),
             "top_language": github_stats.get("top_language"),
+            "stars": github_stats.get("total_stars", 0),
+            "forks": github_stats.get("total_forks", 0),
+            "followers": github_stats.get("followers", 0),
+            "avatar_url": github_stats.get("avatar_url"),
+            "name": github_stats.get("name"),
+            "bio": github_stats.get("bio"),
+            "language_distribution": github_stats.get("language_distribution", {}),
+            "total_contributions": github_stats.get("total_contributions"),
+            "contributions_visibility": github_stats.get("contributions_visibility", "public"),
         }
 
     # 2. Fetch and process LeetCode stats
@@ -104,9 +113,68 @@ def fetch_and_update_metrics(
             "hard": leetcode_stats.get("hard_solved", 0),
             "rating": contest_rating,
             "ranking": leetcode_stats.get("ranking", 0),
+            "real_name": leetcode_stats.get("real_name"),
+            "reputation": leetcode_stats.get("reputation", 0),
+            "attended_contests": leetcode_stats.get("attended_contests", 0),
+            "top_percentage": leetcode_stats.get("top_percentage", 0.0),
         }
+
+    result["last_synced"] = now.isoformat()
+    result["dsa_score"] = skill_vector.dsa_score
+    result["github_handle"] = platform_link.github_username
+    result["leetcode_username"] = platform_link.leetcode_username
 
     # 3. Commit database transaction
     db.session.commit()
+
+    # Store latest telemetry breakdown snapshot for zero-network GET requests
+    _TELEMETRY_SNAPSHOTS[student_id] = {
+        "github": result.get("github"),
+        "leetcode": result.get("leetcode"),
+    }
+
+    return result
+
+
+# In-memory telemetry breakdown snapshot store keyed by student_id
+_TELEMETRY_SNAPSHOTS: Dict[int, Dict[str, Any]] = {}
+
+
+def get_student_telemetry(student_id: int) -> Dict[str, Any]:
+    """
+    Get current telemetry details for a student from database and cached snapshots.
+    Guaranteed to never execute external network requests.
+
+    Args:
+        student_id: The student's primary key
+
+    Returns:
+        Dict with current handles, last_synced, dsa_score, and available metrics.
+    """
+    user = db.session.get(User, student_id)
+    if not user:
+        raise ValueError("Student not found")
+
+    platform_link = PlatformLink.query.filter_by(student_id=student_id).first()
+    skill_vector = SkillVector.query.filter_by(student_id=student_id).first()
+
+    gh = (platform_link.github_username if platform_link else "") or ""
+    lc = (platform_link.leetcode_username if platform_link else "") or ""
+
+    result: Dict[str, Any] = {
+        "github_handle": gh,
+        "leetcode_username": lc,
+        "last_synced": platform_link.last_synced.isoformat() if (platform_link and platform_link.last_synced) else None,
+        "dsa_score": skill_vector.dsa_score if skill_vector else 0.0,
+        "github": None,
+        "leetcode": None,
+    }
+
+    # Populate only from stored snapshot cache without making external network calls
+    snapshot = _TELEMETRY_SNAPSHOTS.get(student_id, {})
+    if gh and snapshot.get("github"):
+        result["github"] = snapshot["github"]
+    if lc and snapshot.get("leetcode"):
+        result["leetcode"] = snapshot["leetcode"]
 
     return result

@@ -76,3 +76,34 @@ def fetch_metrics():
         return jsonify({"error": "Internal server error"}), 500
 
     return jsonify(results), 200
+
+
+@metrics_bp.route("/telemetry", methods=["GET"])
+@jwt_required()
+def get_telemetry():
+    """
+    Get student's current saved telemetry details and cached metrics.
+
+    Returns:
+        200: {
+            "github_handle": str,
+            "leetcode_username": str,
+            "last_synced": str | null,
+            "dsa_score": float,
+            "github": { ... } | null,
+            "leetcode": { ... } | null
+        }
+        404: { "error": "Student not found" }
+    """
+    student_id = int(get_jwt_identity())
+    try:
+        results = metrics_service.get_student_telemetry(student_id=student_id)
+        return jsonify(results), 200
+    except ValueError as exc:
+        if str(exc) == "Student not found":
+            return jsonify({"error": "Student not found"}), 404
+        logger.warning("Validation error fetching telemetry for student %s: %s", student_id, exc)
+        return jsonify({"error": "Invalid input provided"}), 400
+    except Exception:
+        logger.exception("Unexpected error fetching telemetry for student %s", student_id)
+        return jsonify({"error": "Internal server error"}), 500

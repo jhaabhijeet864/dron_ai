@@ -30,11 +30,79 @@ def _get_headers() -> dict:
     """Build GitHub API request headers with optional authentication."""
     headers = {
         "Accept": GITHUB_ACCEPT_HEADER,
+        "User-Agent": "DronAI-Platform/1.0",
     }
-    pat = os.getenv("GITHUB_PAT")
-    if pat:
+    pat = (os.getenv("GITHUB_PAT") or "").strip()
+    # Ignore placeholder token values from template configuration
+    if pat and pat not in ("your-github-personal-access-token", "your_token", "your_pat_here", "None"):
         headers["Authorization"] = f"Bearer {pat}"
     return headers
+
+
+def _fetch_private_telemetry_graphql(username: str, headers: dict) -> dict:
+    """
+    If authenticated with a PAT, query GitHub GraphQL API for the user's
+    contribution calendar.
+
+    Visibility semantics:
+    - If the authenticated viewer matches the queried username, totalContributions
+      includes both public and private activity for the student's own account,
+      and private repositories are counted.
+    - If the authenticated viewer does not match the queried username, totalContributions
+      reports public activity (and any private contributions explicitly opted-in
+      by the user via profile settings). It does not expose hidden private activity.
+    """
+    if "Authorization" not in headers:
+        return {}
+
+    query = """
+    query($login: String!) {
+      viewer {
+        login
+        repositories(privacy: PRIVATE) {
+          totalCount
+        }
+      }
+      user(login: $login) {
+        contributionsCollection {
+          contributionCalendar {
+            totalContributions
+          }
+        }
+      }
+    }
+    """
+    try:
+        resp = requests.post(
+            f"{GITHUB_API_BASE}/graphql",
+            json={"query": query, "variables": {"login": username}},
+            headers=headers,
+            timeout=8,
+        )
+        if resp.status_code == 200:
+            res_data = resp.json().get("data", {})
+            user_data = res_data.get("user")
+            viewer_data = res_data.get("viewer")
+
+            result = {}
+            if user_data:
+                calendar = user_data.get("contributionsCollection", {}).get("contributionCalendar", {})
+                result["total_contributions"] = calendar.get("totalContributions")
+
+            is_own_account = bool(
+                viewer_data
+                and viewer_data.get("login", "").lower() == (username or "").lower()
+            )
+            result["is_own_account"] = is_own_account
+            result["contributions_visibility"] = "authenticated_owner" if is_own_account else "public_or_opted_in"
+
+            if is_own_account and viewer_data:
+                result["private_repos"] = viewer_data.get("repositories", {}).get("totalCount", 0)
+
+            return result
+    except Exception as e:
+        logger.debug(f"GraphQL contribution telemetry fetch skipped: {e}")
+    return {}
 
 
 @functools.lru_cache(maxsize=128)
@@ -51,6 +119,13 @@ def fetch_github_stats(username: str) -> dict:
             - total_commits: int (estimated from public repos)
             - languages: list of programming languages used
             - top_language: most frequently used language
+            - total_stars: int
+            - total_forks: int
+            - followers: int
+            - avatar_url: str or None
+            - name: str or None
+            - bio: str or None
+            - language_distribution: dict
 
     Raises:
         ConnectionError: If GitHub API is unreachable
@@ -63,6 +138,15 @@ def fetch_github_stats(username: str) -> dict:
         "total_commits": 0,
         "languages": [],
         "top_language": None,
+        "total_stars": 0,
+        "total_forks": 0,
+        "followers": 0,
+        "avatar_url": None,
+        "name": None,
+        "bio": None,
+        "language_distribution": {},
+        "total_contributions": None,
+        "contributions_visibility": "public",
     }
 
     if not username:
@@ -74,10 +158,16 @@ def fetch_github_stats(username: str) -> dict:
         
         headers = _get_headers()
         
-        # 1. Fetch user info for total repos
+        # 1. Fetch user info for total repos, followers, and profile details
         user_url = f"{GITHUB_API_BASE}/users/{username}"
         user_resp = requests.get(user_url, headers=headers, timeout=10)
         
+        # If PAT returned 401 Unauthorized, gracefully fall back to unauthenticated public request
+        if user_resp.status_code == 401 and "Authorization" in headers:
+            logger.warning(f"GitHub PAT returned 401 Unauthorized for user {username}; falling back to unauthenticated public request")
+            headers = {k: v for k, v in headers.items() if k != "Authorization"}
+            user_resp = requests.get(user_url, headers=headers, timeout=10)
+            
         if user_resp.status_code == 404:
             logger.warning(f"GitHub user not found: {username}")
             return result
@@ -85,7 +175,12 @@ def fetch_github_stats(username: str) -> dict:
             logger.warning(f"GitHub API returned {user_resp.status_code} for user {username}")
             return result
             
-        result["total_repos"] = user_resp.json().get("public_repos", 0)
+        user_data = user_resp.json()
+        result["total_repos"] = user_data.get("public_repos", 0)
+        result["followers"] = user_data.get("followers", 0)
+        result["avatar_url"] = user_data.get("avatar_url")
+        result["name"] = user_data.get("name")
+        result["bio"] = user_data.get("bio")
         
         # 2. Fetch up to 15 recently updated repos
         repos_url = f"{GITHUB_API_BASE}/users/{username}/repos?type=owner&sort=updated&per_page=15"
@@ -98,12 +193,17 @@ def fetch_github_stats(username: str) -> dict:
         
         lang_counter = Counter()
         commits_count = 0
+        stars_count = 0
+        forks_count = 0
         
         one_year_ago = (datetime.now() - timedelta(days=365)).isoformat() + "Z"
         
         for repo in repos:
             if repo.get("fork"):
                 continue
+            
+            stars_count += repo.get("stargazers_count", 0)
+            forks_count += repo.get("forks_count", 0)
                 
             lang = repo.get("language")
             if lang:
@@ -118,8 +218,21 @@ def fetch_github_stats(username: str) -> dict:
             except requests.RequestException:
                 pass # skip this repo if commit fetch fails (rate limit, timeout)
         
+        # 4. If authenticated with PAT, query GraphQL contribution calendar and private repo counts
+        graphql_data = _fetch_private_telemetry_graphql(username, headers)
         result["total_commits"] = commits_count
+
+        if graphql_data.get("total_contributions") is not None:
+            result["total_contributions"] = int(graphql_data["total_contributions"])
+            result["contributions_visibility"] = graphql_data.get("contributions_visibility", "public")
+
+        if graphql_data.get("private_repos"):
+            result["total_repos"] += int(graphql_data["private_repos"])
+
+        result["total_stars"] = stars_count
+        result["total_forks"] = forks_count
         result["languages"] = list(lang_counter.keys())
+        result["language_distribution"] = dict(lang_counter)
         if lang_counter:
             result["top_language"] = lang_counter.most_common(1)[0][0]
             
